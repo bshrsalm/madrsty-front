@@ -1,0 +1,1292 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>madrasty</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 320px;
+            background: #ffffff;
+            min-height: 100vh;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            right: 0;
+            top: 0;
+            z-index: 100;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-header {
+            padding: 30px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            position: relative;
+        }
+
+        .sidebar-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .sidebar-subtitle {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .sidebar-close {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sidebar-close:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+
+        .sidebar-close svg {
+            width: 20px;
+            height: 20px;
+            display: block;
+        }
+
+        .sidebar-menu {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .menu-section {
+            margin-bottom: 30px;
+        }
+
+        .menu-section-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: #9ca3af;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+            padding: 0 10px;
+        }
+
+        .accordion-item {
+            background: #f9fafb;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s;
+            margin-bottom: 10px;
+        }
+
+        .accordion-item.active {
+            border-color: #667eea;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+        }
+
+        .accordion-header {
+            display: flex;
+            align-items: center;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: transparent;
+        }
+
+        .accordion-item.active .accordion-header {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+        }
+
+        .accordion-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .accordion-icon svg {
+            width: 20px;
+            height: 20px;
+            color: white;
+        }
+
+        .accordion-title {
+            flex: 1;
+            margin: 0 12px;
+            font-size: 15px;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .accordion-arrow {
+            width: 20px;
+            height: 20px;
+            color: #9ca3af;
+            transition: transform 0.3s;
+            flex-shrink: 0;
+        }
+
+        .accordion-item.active .accordion-arrow {
+            transform: rotate(180deg);
+            color: #667eea;
+        }
+
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .accordion-content-inner {
+            padding: 0 16px 16px 16px;
+        }
+
+        .accordion-description {
+            font-size: 13px;
+            color: #6b7280;
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+
+        .accordion-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.3s;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .accordion-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.3);
+        }
+
+        .accordion-link svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .sidebar-footer {
+            padding: 20px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .logout-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .logout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3);
+        }
+
+        .logout-btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-right: 320px;
+            flex: 1;
+            padding: 40px;
+            transition: margin-right 0.3s ease;
+        }
+
+        .posts-page {
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        .posts-page::before {
+            content: '';
+            position: absolute;
+            width: 1000px;
+            height: 1000px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 50%;
+            top: -500px;
+            right: -400px;
+            z-index: 0;
+            animation: float 30s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(50px, 50px); }
+        }
+
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            animation: rise 18s infinite ease-in;
+        }
+
+        @keyframes rise {
+            0% {
+                opacity: 0;
+                transform: translateY(100vh) scale(0);
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-100vh) scale(1);
+            }
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            animation: slideDown 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        @keyframes slideDown {
+            from { 
+                opacity: 0; 
+                transform: translateY(-100px) scale(0.8); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0) scale(1); 
+            }
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 24px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            color: white;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            margin-bottom: 30px;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateX(5px);
+        }
+
+        .header h1 {
+            font-size: 48px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 12px;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            letter-spacing: -1px;
+        }
+
+        .header p {
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 500;
+        }
+
+        .stats-bar {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            padding: 12px 24px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .stat-number {
+            font-size: 24px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 500;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 100px 20px;
+            display: none;
+        }
+
+        .loading.show {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(255, 255, 255, 0.2);
+            border-top-color: white;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .posts-container {
+            display: grid;
+            gap: 20px;
+        }
+
+        .post-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            overflow: hidden;
+            animation: cardAppear 0.6s ease backwards;
+        }
+
+        @keyframes cardAppear {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .post-card:hover {
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+            transform: translateY(-2px);
+        }
+
+        .post-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 24px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .post-author {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .author-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: 700;
+            color: white;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+        }
+
+        .author-info {
+            flex: 1;
+        }
+
+        .author-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 4px;
+        }
+
+        .post-date {
+            font-size: 13px;
+            color: #8e8e93;
+            font-weight: 500;
+        }
+
+        .post-body {
+            padding: 24px;
+        }
+
+        .post-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 16px;
+            line-height: 1.4;
+            letter-spacing: -0.3px;
+        }
+
+        .post-image-container {
+            width: 100%;
+            max-height: 350px;
+            overflow: hidden;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            background: #f5f5f7;
+            cursor: pointer;
+        }
+
+        .post-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.4s ease;
+        }
+
+        .post-image:hover {
+            transform: scale(1.03);
+        }
+
+        .post-content {
+            color: #3a3a3c;
+            font-size: 15px;
+            line-height: 1.7;
+            white-space: pre-wrap;
+        }
+
+        .post-footer {
+            padding: 16px 24px;
+            border-top: 1px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .post-meta {
+            display: flex;
+            gap: 20px;
+            font-size: 13px;
+            color: #8e8e93;
+            font-weight: 500;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .meta-item svg {
+            width: 16px;
+            height: 16px;
+            opacity: 0.7;
+        }
+
+        .share-btn {
+            padding: 8px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .share-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .share-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .no-posts {
+            text-align: center;
+            padding: 100px 20px;
+            color: white;
+            display: none;
+        }
+
+        .no-posts.show {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .no-posts svg {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 24px;
+            opacity: 0.8;
+        }
+
+        .no-posts-text {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .no-posts-subtitle {
+            font-size: 16px;
+            font-weight: 500;
+            opacity: 0.8;
+        }
+
+        .image-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .image-modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+            border-radius: 8px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: white;
+            font-size: 36px;
+            font-weight: 300;
+            cursor: pointer;
+            transition: 0.3s;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+
+        .close-modal:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Menu Toggle Button */
+        .menu-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 101;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 12px 16px;
+            cursor: pointer;
+            box-shadow: 0 4px 16px rgba(102, 126, 234, 0.4);
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .menu-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        .menu-toggle svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        /* Sidebar states */
+        .sidebar.collapsed {
+            transform: translateX(100%);
+        }
+
+        .main-content.expanded {
+            margin-right: 20px;
+        }
+
+        /* Mobile responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(100%);
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-right: 0;
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 36px;
+            }
+
+            .post-card {
+                border-radius: 12px;
+            }
+
+            .post-header {
+                padding: 16px 20px;
+            }
+
+            .post-body {
+                padding: 20px;
+            }
+
+            .post-title {
+                font-size: 20px;
+            }
+
+            .post-image-container {
+                max-height: 280px;
+                border-radius: 8px;
+            }
+
+            .post-footer {
+                padding: 12px 20px;
+                flex-direction: column;
+                gap: 12px;
+                align-items: flex-start;
+            }
+
+            .share-btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .stats-bar {
+                flex-direction: column;
+            }
+
+            .stat-item {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Menu Toggle Button -->
+    <button class="menu-toggle" id="menuToggle" onclick="toggleSidebar()">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+        <span>القائمة</span>
+    </button>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-title">مدرستي</div>
+            <div class="sidebar-subtitle">نظام إدارة المدارس</div>
+        </div>
+
+        <div class="sidebar-menu">
+            <div class="menu-section">
+                <div class="menu-section-title">القائمة الرئيسية</div>
+                
+                <!-- About School -->
+                <div class="accordion-item" id="accordion1">
+                    <div class="accordion-header" onclick="toggleAccordion('accordion1')">
+                        <div class="accordion-icon">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <div class="accordion-title">حول الموقع</div>
+                        <svg class="accordion-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-content-inner">
+                            <p class="accordion-description">تعرف على سبب انشاء الموقع، أهدافه، والخدمات التي يقدمها.</p>
+                            <a href="about.html" class="accordion-link">
+                                <span>عرض المعلومات</span>
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- View School -->
+                <div class="accordion-item" id="accordion2">
+                    <div class="accordion-header" onclick="toggleAccordion('accordion2')">
+                        <div class="accordion-icon">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                            </svg>
+                        </div>
+                        <div class="accordion-title">عرض المدرسة</div>
+                        <svg class="accordion-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-content-inner">
+                            <p class="accordion-description">شاهد المداراس المتاحه في الموقع مع الاسعار والحسابات وبحث عن مدرسه محدده ومتابعه مدرسه معينه</p>
+                            <a href="view_school.html" class="accordion-link">
+                                <span>استعراض التفاصيل</span>
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Compare Schools -->
+                <div class="accordion-item" id="accordionCompare">
+                    <div class="accordion-header" onclick="toggleAccordion('accordionCompare')">
+                        <div class="accordion-icon">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
+                            </svg>
+                        </div>
+                        <div class="accordion-title">مقارنة المدارس</div>
+                        <svg class="accordion-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-content-inner">
+                            <p class="accordion-description">قارن بين مدرستين لتحديد الأفضل بناءً على الرسوم والخدمات والمعلومات المتاحة.</p>
+                            <a href="compare.html" class="accordion-link">
+                                <span>ابدأ المقارنة</span>
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Compare Ratings -->
+                <div class="accordion-item " id="accordionCompareRatings">
+                    <div class="accordion-header" onclick="toggleAccordion('accordionCompareRatings')">
+                        <div class="accordion-icon">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
+                            </svg>
+                        </div>
+                        <div class="accordion-title">مقارنة التقييمات</div>
+                        <svg class="accordion-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-content-inner">
+                            <p class="accordion-description">قارن بين تقييمات مدرستين لتحديد الأفضل بناءً على تجارب المستخدمين.</p>
+                            <a href="compare_ratings.html" class="accordion-link">
+                                <span>ابدأ المقارنة</span>
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Profile -->
+                <div class="accordion-item" id="accordion3">
+                    <div class="accordion-header" onclick="toggleAccordion('accordion3')">
+                        <div class="accordion-icon">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                            </svg>
+                        </div>
+                        <div class="accordion-title">الملف الشخصي</div>
+                        <svg class="accordion-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-content-inner">
+                            <p class="accordion-description">عرض وتعديل معلوماتك الشخصية، تحديث صورة البروفايل، وإدارة حسابك.</p>
+                            <a href="profile.html" class="accordion-link">
+                                <span>انتقل للملف</span>
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- QR Code -->
+                <div class="accordion-item" id="accordion4">
+                    <div class="accordion-header" onclick="toggleAccordion('accordion4')">
+                        <div class="accordion-icon">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-width="2" d="M3 3h7v7H3V3zm11 0h7v7h-7V3zM3 14h7v7H3v-7zm11 0h3v3h-3v-3zM21 14h-3v3h3v-3zm-6 6h3v3h-3v-3z"/>
+                            </svg>
+                        </div>
+                        <div class="accordion-title">الباركود</div>
+                        <svg class="accordion-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-content-inner">
+                            <p class="accordion-description">
+                                فحص الباركود الخاص بالمدرسة أو متابعة التحقق.
+                            </p>
+                            <a href="qr_verify.html" class="accordion-link">
+                                <span>فتح صفحة الباركود</span>
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15 19l-7-7 7-7"></path>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar-footer">
+            <button class="logout-btn" onclick="logout()">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                </svg>
+                تسجيل الخروج
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content" id="mainContent">
+        <div class="posts-page">
+            <div class="particles" id="particles"></div>
+
+            <div class="container">
+          
+
+                <div class="header">
+                    <h1 id="schoolName">منشورات المدرسة</h1>
+                    <p>آخر الأخبار والفعاليات</p>
+                    <div class="stats-bar">
+                        <div class="stat-item">
+                            <div class="stat-number" id="totalPosts">0</div>
+                            <div class="stat-label">إجمالي المنشورات</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="loading" id="loading">
+                    <div class="loading-spinner"></div>
+                    <div class="loading-text">جاري تحميل المنشورات...</div>
+                </div>
+
+                <div class="posts-container" id="postsContainer"></div>
+
+                <div class="no-posts" id="noPosts">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    <div class="no-posts-text">لا توجد منشورات حالياً</div>
+                    <div class="no-posts-subtitle">سيتم إضافة المنشورات قريباً</div>
+                </div>
+            </div>
+
+            <div class="image-modal" id="imageModal" onclick="closeImageModal()">
+                <span class="close-modal">&times;</span>
+                <img class="modal-content" id="modalImage">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://127.0.0.1:8000/api';
+        const STORAGE_URL = 'http://127.0.0.1:8000/storage';
+        const API_TOKEN = localStorage.getItem('authToken') || '';
+
+        // Sidebar and navigation functions
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+            const menuToggle = document.getElementById('menuToggle');
+            
+            if (window.innerWidth <= 768) {
+                // Mobile: just toggle active
+                sidebar.classList.toggle('active');
+            } else {
+                // Desktop: collapse/expand
+                sidebar.classList.toggle('collapsed');
+                mainContent.classList.toggle('expanded');
+                
+                // Update button icon
+                const isCollapsed = sidebar.classList.contains('collapsed');
+                if (isCollapsed) {
+                    menuToggle.innerHTML = `
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                        <span>فتح القائمة</span>
+                    `;
+                } else {
+                    menuToggle.innerHTML = `
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                        <span>إغلاق القائمة</span>
+                    `;
+                }
+            }
+        }
+
+        // Toggle accordion
+        function toggleAccordion(id) {
+            const item = document.getElementById(id);
+            const content = item.querySelector('.accordion-content');
+            const isActive = item.classList.contains('active');
+
+            // Close all accordions
+            document.querySelectorAll('.accordion-item').forEach(acc => {
+                acc.classList.remove('active');
+                acc.querySelector('.accordion-content').style.maxHeight = '0';
+            });
+
+            // Open clicked accordion if it wasn't active
+            if (!isActive) {
+                item.classList.add('active');
+                content.style.maxHeight = content.scrollHeight + 'px';
+            }
+        }
+
+        // Check if user is logged in
+        function checkAuth() {
+            const token = localStorage.getItem('authToken');
+            if (!token) {
+                window.location.href = 'login.html';
+                return false;
+            }
+            return true;
+        }
+
+        // Logout function
+        async function logout() {
+            const token = localStorage.getItem('authToken');
+            
+            try {
+                await fetch(`${API_BASE}/logout`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Accept': 'application/json',
+                    }
+                });
+            } catch (error) {
+                console.error('Logout error:', error);
+            }
+            
+            // Clear localStorage
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('currentUser');
+            
+            // Redirect to login
+            window.location.href = 'D:/frontend/madrsty/login/login.html';
+        }
+
+        // Posts page functions
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            for (let i = 0; i < 15; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.width = Math.random() * 5 + 2 + 'px';
+                particle.style.height = particle.style.width;
+                particle.style.animationDelay = Math.random() * 18 + 's';
+                particle.style.animationDuration = Math.random() * 12 + 12 + 's';
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        createParticles();
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const schoolId = urlParams.get('schoolId');
+        const schoolName = urlParams.get('schoolName');
+
+        if (schoolName) {
+            document.getElementById('schoolName').textContent = `منشورات ${schoolName}`;
+            document.title = `منشورات ${schoolName}`;
+        }
+
+        async function fetchPosts() {
+            const loading = document.getElementById('loading');
+            const container = document.getElementById('postsContainer');
+            const noPosts = document.getElementById('noPosts');
+
+            loading.classList.add('show');
+            container.innerHTML = '';
+            noPosts.classList.remove('show');
+
+            try {
+                const response = await fetch(`${API_BASE}/schools/${schoolId}/posts`, {
+                    headers: {
+                        'Authorization': `Bearer ${API_TOKEN}`,
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('فشل في تحميل المنشورات');
+                }
+
+                const posts = await response.json();
+                document.getElementById('totalPosts').textContent = posts.length;
+
+                if (posts.length === 0) {
+                    noPosts.classList.add('show');
+                } else {
+                    displayPosts(posts);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                noPosts.classList.add('show');
+                noPosts.querySelector('.no-posts-text').textContent = 'حدث خطأ في تحميل المنشورات';
+                noPosts.querySelector('.no-posts-subtitle').textContent = error.message;
+            } finally {
+                loading.classList.remove('show');
+            }
+        }
+
+        function displayPosts(posts) {
+            const container = document.getElementById('postsContainer');
+
+            container.innerHTML = posts.map((post, index) => {
+                const date = new Date(post.created_at);
+                const formattedDate = date.toLocaleDateString('ar-SA', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+                const formattedTime = date.toLocaleTimeString('ar-SA', {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+
+                const authorInitial = post.user && post.user.name ? post.user.name.charAt(0).toUpperCase() : 'U';
+                const imageUrl = post.image ? `${STORAGE_URL}/${post.image}` : null;
+                
+                const imageSection = imageUrl ? `
+                    <div class="post-image-container" onclick="openImageModal('${imageUrl}')">
+                        <img src="${imageUrl}" alt="${post.title}" class="post-image" onerror="this.parentElement.style.display='none'">
+                    </div>
+                ` : '';
+
+                const views = Math.floor(Math.random() * 200) + 50;
+
+                return `
+                    <div class="post-card" style="animation-delay: ${index * 0.1}s;">
+                        <div class="post-header">
+                            <div class="post-author">
+                                <div class="author-avatar">${authorInitial}</div>
+                                <div class="author-info">
+                                    <div class="author-name">${post.user ? post.user.name : 'غير معروف'}</div>
+                                    <div class="post-date">${formattedDate}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="post-body">
+                            <div class="post-title">${post.title}</div>
+                            ${imageSection}
+                            <div class="post-content">${post.content}</div>
+                        </div>
+
+                        <div class="post-footer">
+                            <div class="post-meta">
+                                <div class="meta-item">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    ${formattedTime}
+                                </div>
+                                <div class="meta-item">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                    </svg>
+                                    ${views} مشاهدة
+                                </div>
+                            </div>
+                            <button class="share-btn" onclick="sharePost('${post.title}')">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path>
+                                </svg>
+                                مشاركة
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function openImageModal(imageUrl) {
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('modalImage');
+            modal.classList.add('show');
+            modalImg.src = imageUrl;
+        }
+
+        function closeImageModal() {
+            const modal = document.getElementById('imageModal');
+            modal.classList.remove('show');
+        }
+
+        function sharePost(title) {
+            if (navigator.share) {
+                navigator.share({
+                    title: title,
+                    text: `شاهد هذا المنشور: ${title}`,
+                    url: window.location.href
+                }).catch(err => console.log('Error sharing:', err));
+            } else {
+                alert('تم نسخ رابط المنشور');
+            }
+        }
+
+        // Initialize page
+        if (schoolId) {
+            fetchPosts();
+        } else {
+            document.getElementById('noPosts').classList.add('show');
+            document.querySelector('.no-posts-text').textContent = 'خطأ في تحميل المدرسة';
+        }
+
+        // Close sidebar when clicking outside (mobile)
+        document.addEventListener('click', function(event) {
+            const sidebar = document.getElementById('sidebar');
+            const menuToggle = document.getElementById('menuToggle');
+            
+            if (window.innerWidth <= 768 && 
+                !sidebar.contains(event.target) && 
+                !menuToggle.contains(event.target) && 
+                sidebar.classList.contains('active')) {
+                sidebar.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>

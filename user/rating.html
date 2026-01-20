@@ -1,0 +1,1569 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>madrasty</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            width: 800px;
+            height: 800px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            top: -400px;
+            left: -300px;
+            z-index: 0;
+            animation: float 25s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(40px, -40px) rotate(8deg); }
+            50% { transform: translate(-30px, 30px) rotate(-8deg); }
+            75% { transform: translate(30px, 15px) rotate(5deg); }
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 320px;
+            background: #ffffff;
+            min-height: 100vh;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            right: 0;
+            top: 0;
+            z-index: 100;
+            transition: transform 0.3s ease;
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            padding: 30px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            position: relative;
+        }
+
+        .sidebar-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .sidebar-subtitle {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .sidebar-menu {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .menu-section {
+            margin-bottom: 30px;
+        }
+
+        .menu-section-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: #9ca3af;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+            padding: 0 10px;
+        }
+
+        .accordion-item {
+            background: #f9fafb;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s;
+            margin-bottom: 10px;
+        }
+
+        .accordion-item.active {
+            border-color: #667eea;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+        }
+
+        .accordion-header {
+            display: flex;
+            align-items: center;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: transparent;
+        }
+
+        .accordion-item.active .accordion-header {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+        }
+
+        .accordion-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .accordion-icon svg {
+            width: 20px;
+            height: 20px;
+            color: white;
+        }
+
+        .accordion-title {
+            flex: 1;
+            margin: 0 12px;
+            font-size: 15px;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .accordion-arrow {
+            width: 20px;
+            height: 20px;
+            color: #9ca3af;
+            transition: transform 0.3s;
+            flex-shrink: 0;
+        }
+
+        .accordion-item.active .accordion-arrow {
+            transform: rotate(180deg);
+            color: #667eea;
+        }
+
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .accordion-content-inner {
+            padding: 0 16px 16px 16px;
+        }
+
+        .accordion-description {
+            font-size: 13px;
+            color: #6b7280;
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+
+        .accordion-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.3s;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .accordion-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.3);
+        }
+
+        .accordion-link svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .sidebar-footer {
+            padding: 20px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .logout-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .logout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3);
+        }
+
+        .logout-btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+            margin-right: 340px;
+        }
+
+        .container {
+            max-width: 600px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 32px;
+            padding: 50px 45px;
+            box-shadow: 0 30px 90px rgba(0, 0, 0, 0.25), 
+                        0 15px 40px rgba(102, 126, 234, 0.3);
+            position: relative;
+            z-index: 1;
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            animation: slideUp 0.6s ease;
+        }
+
+        @keyframes slideUp {
+            from { 
+                opacity: 0; 
+                transform: translateY(40px); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0); 
+            }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .school-icon {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin: 0 auto 25px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4),
+                        0 0 0 8px rgba(255, 255, 255, 0.5);
+            animation: pulse 3s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { 
+                box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4),
+                           0 0 0 8px rgba(255, 255, 255, 0.5);
+            }
+            50% { 
+                box-shadow: 0 15px 45px rgba(102, 126, 234, 0.6),
+                           0 0 0 12px rgba(255, 255, 255, 0.7);
+            }
+        }
+
+        .school-icon svg {
+            width: 50px;
+            height: 50px;
+            color: white;
+            filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.2));
+        }
+
+        h1 {
+            color: #1f2937;
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 10px;
+            letter-spacing: -0.8px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            color: #6b7280;
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .message {
+            padding: 16px 20px;
+            border-radius: 16px;
+            margin-bottom: 24px;
+            text-align: center;
+            font-weight: 700;
+            display: none;
+            font-size: 14px;
+            animation: slideDown 0.4s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        @keyframes slideDown {
+            from { 
+                opacity: 0; 
+                transform: translateY(-15px); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0); 
+            }
+        }
+
+        .message.success {
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            color: #065f46;
+            border: 2px solid #6ee7b7;
+        }
+
+        .message.error {
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+            color: #991b1b;
+            border: 2px solid #fca5a5;
+        }
+
+        .rating-group {
+            margin-bottom: 32px;
+        }
+
+        .rating-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #374151;
+            font-weight: 700;
+            margin-bottom: 16px;
+            font-size: 15px;
+        }
+
+        .rating-label svg {
+            width: 20px;
+            height: 20px;
+            color: #667eea;
+            filter: drop-shadow(0 2px 4px rgba(102, 126, 234, 0.3));
+        }
+
+        .rating-container {
+            background: linear-gradient(135deg, #f9fafb 0%, #ffffff 100%);
+            padding: 20px;
+            border-radius: 16px;
+            border: 2px solid #e5e7eb;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s;
+        }
+
+        .rating-container:hover {
+            border-color: #667eea;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+        }
+
+        .slider-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .slider {
+            flex: 1;
+            height: 8px;
+            border-radius: 10px;
+            background: linear-gradient(to right, #e5e7eb 0%, #e5e7eb 100%);
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+            position: relative;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            transition: all 0.3s;
+        }
+
+        .slider::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.6);
+        }
+
+        .slider::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            transition: all 0.3s;
+        }
+
+        .slider::-moz-range-thumb:hover {
+            transform: scale(1.2);
+            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.6);
+        }
+
+        .slider-value {
+            min-width: 60px;
+            text-align: center;
+            padding: 8px 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 16px;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+            margin-top: 12px;
+            position: relative;
+            overflow: hidden;
+            letter-spacing: 0.5px;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(102, 126, 234, 0.5);
+        }
+
+        .btn:active {
+            transform: translateY(-1px);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-delete {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            margin-top: 16px;
+        }
+
+        .btn-delete:hover {
+            box-shadow: 0 12px 30px rgba(239, 68, 68, 0.5);
+        }
+
+        .stats-section {
+            margin-top: 40px;
+            padding-top: 40px;
+            border-top: 2px solid #e5e7eb;
+        }
+
+        .stats-title {
+            text-align: center;
+            color: #374151;
+            font-size: 20px;
+            font-weight: 800;
+            margin-bottom: 24px;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            background: linear-gradient(135deg, #f9fafb 0%, #ffffff 100%);
+            border-radius: 12px;
+            margin-bottom: 12px;
+            border: 2px solid #e5e7eb;
+            transition: all 0.3s;
+        }
+
+        .stat-item:hover {
+            border-color: #667eea;
+            transform: translateX(-5px);
+        }
+
+        .stat-label {
+            color: #6b7280;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .stat-value {
+            color: #1f2937;
+            font-weight: 800;
+            font-size: 18px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #6b7280;
+            font-weight: 600;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Menu Toggle Button */
+        .menu-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 101;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 12px 16px;
+            cursor: pointer;
+            box-shadow: 0 4px 16px rgba(102, 126, 234, 0.4);
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .menu-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        .menu-toggle svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        /* Sidebar states */
+        .sidebar.collapsed {
+            transform: translateX(100%);
+        }
+
+        .main-content.expanded {
+            margin-right: 20px;
+        }
+
+        /* Mobile responsive */
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+                padding: 10px;
+            }
+
+            .sidebar {
+                width: 100%;
+                margin-left: 0;
+                margin-bottom: 20px;
+                min-height: auto;
+                transform: translateX(0);
+            }
+
+            .main-content {
+                width: 100%;
+            }
+
+            .container {
+                padding: 40px 30px;
+            }
+
+            h1 {
+                font-size: 26px;
+            }
+
+            .school-icon {
+                width: 80px;
+                height: 80px;
+            }
+
+            .school-icon svg {
+                width: 40px;
+                height: 40px;
+            }
+
+            .menu-toggle {
+                display: none;
+            }
+        }
+
+        /* إضافة styles جديدة */
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .rating-status {
+            padding: 12px 20px;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border: 2px solid #667eea;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 600;
+            color: #667eea;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Menu Toggle Button -->
+    <button class="menu-toggle" id="menuToggle" onclick="toggleSidebar()">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+        <span>القائمة</span>
+    </button>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <button class="sidebar-close" onclick="toggleSidebar()">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+            <div class="sidebar-title"></div>
+            <div class="sidebar-subtitle">نظام إدارة المدارس</div>
+        </div>
+
+        <div class="sidebar-menu">
+            <div class="menu-section">
+                <div class="menu-section-title">القائمة الرئيسية</div>
+                
+                <!-- About School -->
+                <div class="accordion-item" id="accordion1">
+                    <div class="accordion-header" onclick="toggleAccordion('accordion1')">
+                        <div class="accordion-icon">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <div class="accordion-title">حول الموقع</div>
+                        <svg class="accordion-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-content-inner">
+                            <p class="accordion-description">تعرف على سبب انشاء الموقع، أهدافه، والخدمات التي يقدمها.</p>
+                            <a href="about.html" class="accordion-link">
+                                <span>عرض المعلومات</span>
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- View School -->
+                <div class="accordion-item" id="accordion2">
+                    <div class="accordion-header" onclick="toggleAccordion('accordion2')">
+                        <div class="accordion-icon">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                            </svg>
+                        </div>
+                        <div class="accordion-title">عرض المدرسة</div>
+                        <svg class="accordion-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-content-inner">
+                            <p class="accordion-description">شاهد المداراس المتاحه في الموقع مع الاسعار والحسابات وبحث عن مدرسه محدده ومتابعه مدرسه معينه</p>
+                            <a href="view_school.html" class="accordion-link">
+                                <span>استعراض التفاصيل</span>
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+              <div class="accordion-item" id="accordionCompare">
+                    <div class="accordion-header" onclick="toggleAccordion('accordionCompare')">
+                        <div class="accordion-icon">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
+                            </svg>
+                        </div>
+                        <div class="accordion-title">مقارنة المدارس</div>
+                        <svg class="accordion-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-content-inner">
+                            <p class="accordion-description">قارن بين مدرستين لتحديد الأفضل بناءً على الرسوم والخدمات والمعلومات المتاحة.</p>
+                            <a href="compare.html" class="accordion-link">
+                                <span>ابدأ المقارنة</span>
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Compare Ratings -->
+                <div class="accordion-item " id="accordionCompareRatings">
+                    <div class="accordion-header" onclick="toggleAccordion('accordionCompareRatings')">
+                        <div class="accordion-icon">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
+                            </svg>
+                        </div>
+                        <div class="accordion-title">مقارنة التقييمات</div>
+                        <svg class="accordion-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-content-inner">
+                            <p class="accordion-description">قارن بين تقييمات مدرستين لتحديد الأفضل بناءً على تجارب المستخدمين.</p>
+                            <a href="compare_ratings.html" class="accordion-link">
+                                <span>ابدأ المقارنة</span>
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Profile -->
+                <div class="accordion-item" id="accordion3">
+                    <div class="accordion-header" onclick="toggleAccordion('accordion3')">
+                        <div class="accordion-icon">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                            </svg>
+                        </div>
+                        <div class="accordion-title">الملف الشخصي</div>
+                        <svg class="accordion-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-content-inner">
+                            <p class="accordion-description">عرض وتعديل معلوماتك الشخصية، تحديث صورة البروفايل، وإدارة حسابك.</p>
+                            <a href="profile.html" class="accordion-link">
+                                <span>انتقل للملف</span>
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- QR Code -->
+                <div class="accordion-item" id="accordion4">
+                    <div class="accordion-header" onclick="toggleAccordion('accordion4')">
+                        <div class="accordion-icon">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-width="2" d="M3 3h7v7H3V3zm11 0h7v7h-7V3zM3 14h7v7H3v-7zm11 0h3v3h-3v-3zM21 14h-3v3h3v-3zm-6 6h3v3h-3v-3z"/>
+                            </svg>
+                        </div>
+                        <div class="accordion-title">الباركود</div>
+                        <svg class="accordion-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-content-inner">
+                            <p class="accordion-description">
+                                فحص الباركود الخاص بالمدرسة أو متابعة التحقق.
+                            </p>
+                            <a href="qr_verify.html" class="accordion-link">
+                                <span>فتح صفحة الباركود</span>
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15 19l-7-7 7-7"></path>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar-footer">
+            <button class="logout-btn" onclick="logout()">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                </svg>
+                تسجيل الخروج
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content" id="mainContent">
+        <div class="container">
+            <div class="header">
+                <div class="school-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222"/>
+                    </svg>
+                </div>
+                <h1>تقييم المدرسة</h1>
+                <p class="subtitle" id="schoolName">قيّم تجربتك التعليمية</p>
+                
+                <!-- إضافة حالة التقييم -->
+                <div class="rating-status" id="ratingStatus">
+                    ✨ لديك تقييم سابق، يمكنك تحديثه أو حذفه
+                </div>
+            </div>
+
+            <div id="message" class="message"></div>
+
+            <form id="ratingForm">
+                <div class="rating-group">
+                    <div class="rating-label">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                        </svg>
+                        مستوى التعليم
+                    </div>
+                    <div class="rating-container">
+                        <div class="slider-wrapper">
+                            <input type="range" class="slider" id="education_level" min="0" max="100" value="50">
+                            <div class="slider-value" id="education_level_value">50</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="rating-group">
+                    <div class="rating-label">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                        </svg>
+                        الدعم والمساندة
+                    </div>
+                    <div class="rating-container">
+                        <div class="slider-wrapper">
+                            <input type="range" class="slider" id="support" min="0" max="100" value="50">
+                            <div class="slider-value" id="support_value">50</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="rating-group">
+                    <div class="rating-label">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                        </svg>
+                        جودة المعلمين
+                    </div>
+                    <div class="rating-container">
+                        <div class="slider-wrapper">
+                            <input type="range" class="slider" id="teachers" min="0" max="100" value="50">
+                            <div class="slider-value" id="teachers_value">50</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="rating-group">
+                    <div class="rating-label">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+                        </svg>
+                        المتابعة الأكاديمية
+                    </div>
+                    <div class="rating-container">
+                        <div class="slider-wrapper">
+                            <input type="range" class="slider" id="follow_up" min="0" max="100" value="50">
+                            <div class="slider-value" id="follow_up_value">50</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="rating-group">
+                    <div class="rating-label">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        الرحلات والأنشطة
+                    </div>
+                    <div class="rating-container">
+                        <div class="slider-wrapper">
+                            <input type="range" class="slider" id="trips" min="0" max="100" value="50">
+                            <div class="slider-value" id="trips_value">50</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="rating-group">
+                    <div class="rating-label">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                        </svg>
+                        التواصل مع أولياء الأمور
+                    </div>
+                    <div class="rating-container">
+                        <div class="slider-wrapper">
+                            <input type="range" class="slider" id="parent_communication" min="0" max="100" value="50">
+                            <div class="slider-value" id="parent_communication_value">50</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="rating-group">
+                    <div class="rating-label">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        نظام الامتحانات
+                    </div>
+                    <div class="rating-container">
+                        <div class="slider-wrapper">
+                            <input type="range" class="slider" id="exams" min="0" max="100" value="50">
+                            <div class="slider-value" id="exams_value">50</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="rating-group">
+                    <div class="rating-label">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                        </svg>
+                        المناهج الإثرائية
+                    </div>
+                    <div class="rating-container">
+                        <div class="slider-wrapper">
+                            <input type="range" class="slider" id="enrichment_curriculum" min="0" max="100" value="50">
+                            <div class="slider-value" id="enrichment_curriculum_value">50</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="rating-group">
+                    <div class="rating-label">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                        </svg>
+                        إدارة المدرسة
+                    </div>
+                    <div class="rating-container">
+                        <div class="slider-wrapper">
+                            <input type="range" class="slider" id="school_management" min="0" max="100" value="50">
+                            <div class="slider-value" id="school_management_value">50</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="rating-group">
+                    <div class="rating-label">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                        </svg>
+                        بيئة المدرسة
+                    </div>
+                    <div class="rating-container">
+                        <div class="slider-wrapper">
+                            <input type="range" class="slider" id="school_environment" min="0" max="100" value="50">
+                            <div class="slider-value" id="school_environment_value">50</div>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn" id="submitBtn">
+                    <span id="btnText">إرسال التقييم</span>
+                    <span id="btnSpinner" class="loading-spinner hidden"></span>
+                </button>
+
+                <button type="button" class="btn btn-delete hidden" id="deleteBtn">
+                    <span id="deleteBtnText">حذف تقييمي</span>
+                    <span id="deleteBtnSpinner" class="loading-spinner hidden"></span>
+                </button>
+            </form>
+
+            <div class="stats-section hidden" id="statsSection">
+                <h3 class="stats-title">📊 إحصائيات المدرسة</h3>
+                <div id="statsContainer"></div>
+            </div>
+        </div>
+    </div>
+
+  <script>
+    const API_BASE_URL = 'http://127.0.0.1:8000/api';
+    const AUTH_TOKEN = localStorage.getItem('authToken');
+    
+    // ✅ استخراج school_id من URL
+    const urlParams = new URLSearchParams(window.location.search);
+    let SCHOOL_ID = urlParams.get('school_id');
+    
+    // إذا ما فيش school_id من URL، حاول من localStorage
+    if (!SCHOOL_ID) {
+        SCHOOL_ID = localStorage.getItem('verified_school_id');
+    }
+
+    // إذا ما فيش حاجة، رجع للصفحة الأولى
+    if (!SCHOOL_ID) {
+        showMessage('لم يتم تحديد مدرسة. يرجى المحاولة مرة أخرى.', 'error');
+        setTimeout(() => {
+            window.location.href = 'qr.html';
+        }, 2000);
+    }
+
+    // قائمة السلايدرز الكاملة
+    const sliders = [
+        'education_level', 
+        'support', 
+        'teachers', 
+        'follow_up', 
+        'trips',
+        'parent_communication',
+        'exams',
+        'enrichment_curriculum',
+        'school_management',
+        'school_environment'
+    ];
+
+    // تخزين حالة التقييم
+    let hasExistingRating = false;
+    let existingRatingData = null;
+
+    // Sidebar functionality
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.getElementById('mainContent');
+        const menuToggle = document.getElementById('menuToggle');
+        
+        if (window.innerWidth <= 768) {
+            // Mobile: just toggle active
+            sidebar.classList.toggle('active');
+        } else {
+            // Desktop: collapse/expand
+            sidebar.classList.toggle('collapsed');
+            mainContent.classList.toggle('expanded');
+            
+            // Update button icon
+            const isCollapsed = sidebar.classList.contains('collapsed');
+            if (isCollapsed) {
+                menuToggle.innerHTML = `
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                    <span>فتح القائمة</span>
+                `;
+            } else {
+                menuToggle.innerHTML = `
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                    <span>إغلاق القائمة</span>
+                `;
+            }
+        }
+    }
+
+    // Toggle accordion
+    function toggleAccordion(id) {
+        const item = document.getElementById(id);
+        const content = item.querySelector('.accordion-content');
+        const isActive = item.classList.contains('active');
+
+        // Close all accordions
+        document.querySelectorAll('.accordion-item').forEach(acc => {
+            acc.classList.remove('active');
+            acc.querySelector('.accordion-content').style.maxHeight = '0';
+        });
+
+        // Open clicked accordion if it wasn't active
+        if (!isActive) {
+            item.classList.add('active');
+            content.style.maxHeight = content.scrollHeight + 'px';
+        }
+    }
+
+    // Logout function
+    async function logout() {
+        const token = localStorage.getItem('authToken');
+        
+        try {
+            await fetch(`${API_BASE_URL}/logout`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Accept': 'application/json',
+                }
+            });
+        } catch (error) {
+            console.error('Logout error:', error);
+        }
+        
+        // Clear localStorage
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('currentUser');
+        
+        // Redirect to login
+        window.location.href = 'D:/frontend/madrsty/login/login.html';
+    }
+
+    // تحديث قيم السلايدرز
+    sliders.forEach(name => {
+        const slider = document.getElementById(name);
+        const valueDisplay = document.getElementById(`${name}_value`);
+        
+        slider.addEventListener('input', function() {
+            valueDisplay.textContent = this.value;
+            
+            // تحديث لون السلايدر
+            const percentage = (this.value / this.max) * 100;
+            this.style.background = `linear-gradient(to right, #667eea 0%, #764ba2 ${percentage}%, #e5e7eb ${percentage}%, #e5e7eb 100%)`;
+        });
+        
+        // تفعيل اللون الأولي
+        slider.dispatchEvent(new Event('input'));
+    });
+
+    function showMessage(message, type) {
+        const messageEl = document.getElementById('message');
+        messageEl.textContent = message;
+        messageEl.className = `message ${type}`;
+        messageEl.style.display = 'block';
+        
+        setTimeout(() => {
+            messageEl.style.display = 'none';
+        }, 5000);
+    }
+
+    // التحقق مما إذا كان المستخدم قد قيم هذه المدرسة من قبل
+    async function checkUserRating() {
+        if (!AUTH_TOKEN || AUTH_TOKEN === '' || AUTH_TOKEN === 'null') {
+            return;
+        }
+        
+        try {
+            // محاولة الحصول على تقييم المستخدم
+            const response = await fetch(`${API_BASE_URL}/schools/${SCHOOL_ID}/my-rating`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${AUTH_TOKEN}`,
+                    'Accept': 'application/json'
+                }
+            });
+
+            if (response.status === 200) {
+                const data = await response.json();
+                
+                // إذا كان للمستخدم تقييم سابق
+                if (data.rating) {
+                    existingRatingData = data.rating;
+                    hasExistingRating = true;
+                    updateUIWithExistingRating();
+                }
+            } else if (response.status === 404) {
+                // المستخدم ليس لديه تقييم سابق
+                console.log('المستخدم ليس لديه تقييم سابق');
+                hasExistingRating = false;
+            }
+        } catch (error) {
+            console.error('Error checking user rating:', error);
+            
+            // محاولة ثانية بطريقة مختلفة - افتراض أن المستخدم قد يكون قيم
+            if (AUTH_TOKEN) {
+                // تحميل جميع التقييمات ثم التحقق يدوياً
+                await checkRatingAlternative();
+            }
+        }
+    }
+
+    // طريقة بديلة للتحقق من التقييم
+    async function checkRatingAlternative() {
+        try {
+            // الحصول على جميع التقييمات للمدرسة
+            const response = await fetch(`${API_BASE_URL}/schools/${SCHOOL_ID}/ratings`, {
+                headers: {
+                    'Accept': 'application/json'
+                }
+            });
+
+            const data = await response.json();
+
+            if (response.ok && data.ratings && Array.isArray(data.ratings)) {
+                // الحصول على بيانات المستخدم من localStorage
+                const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+                
+                if (currentUser && currentUser.id) {
+                    // البحث عن تقييم المستخدم الحالي
+                    const userRating = data.ratings.find(rating => 
+                        rating.user_id === currentUser.id
+                    );
+                    
+                    if (userRating) {
+                        existingRatingData = userRating;
+                        hasExistingRating = true;
+                        updateUIWithExistingRating();
+                    }
+                }
+            }
+        } catch (error) {
+            console.error('Error in alternative rating check:', error);
+        }
+    }
+
+    // تحديث الواجهة بناءً على التقييم الموجود
+    function updateUIWithExistingRating() {
+        if (!existingRatingData) return;
+        
+        // تعيين قيم السلايدرز للتقييم السابق
+        document.getElementById('education_level').value = existingRatingData.education_level || 50;
+        document.getElementById('support').value = existingRatingData.support || 50;
+        document.getElementById('teachers').value = existingRatingData.teachers || 50;
+        document.getElementById('follow_up').value = existingRatingData.follow_up || 50;
+        document.getElementById('trips').value = existingRatingData.trips || 50;
+        document.getElementById('parent_communication').value = existingRatingData.parent_communication || 50;
+        document.getElementById('exams').value = existingRatingData.exams || 50;
+        document.getElementById('enrichment_curriculum').value = existingRatingData.enrichment_curriculum || 50;
+        document.getElementById('school_management').value = existingRatingData.school_management || 50;
+        document.getElementById('school_environment').value = existingRatingData.school_environment || 50;
+        
+        // تحديث عرض القيم
+        sliders.forEach(name => {
+            document.getElementById(name).dispatchEvent(new Event('input'));
+        });
+        
+        // إظهار زر الحذف
+        document.getElementById('deleteBtn').classList.remove('hidden');
+        
+        // إظهار حالة التقييم
+        document.getElementById('ratingStatus').style.display = 'block';
+        
+        // تغيير نص زر الإرسال
+        document.getElementById('btnText').textContent = 'تحديث التقييم';
+    }
+
+    // تحميل التقييمات والإحصائيات عند فتح الصفحة
+    async function loadRatings() {
+        try {
+            // تحميل إحصائيات المدرسة
+            const response = await fetch(`${API_BASE_URL}/schools/${SCHOOL_ID}/ratings`, {
+                headers: {
+                    'Accept': 'application/json'
+                }
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                if (data.statistics) {
+                    displayStats(data.statistics);
+                }
+                
+                // التحقق من تقييم المستخدم الحالي
+                await checkUserRating();
+                
+                // إذا لم نستطع التحقق من خلال my-rating، جرب الطريقة البديلة
+                if (!hasExistingRating && AUTH_TOKEN) {
+                    await checkRatingAlternative();
+                }
+            }
+            
+        } catch (error) {
+            console.error('Error loading ratings:', error);
+        }
+    }
+
+    function displayStats(stats) {
+        const statsSection = document.getElementById('statsSection');
+        const statsContainer = document.getElementById('statsContainer');
+        
+        if (!stats) return;
+        
+        statsContainer.innerHTML = `
+            <div class="stat-item">
+                <span class="stat-label">عدد المقيّمين</span>
+                <span class="stat-value">${stats.total_raters || 0}</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">متوسط مستوى التعليم</span>
+                <span class="stat-value">${stats.averages?.education_level || 0}</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">متوسط الدعم والمساندة</span>
+                <span class="stat-value">${stats.averages?.support || 0}</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">متوسط جودة المعلمين</span>
+                <span class="stat-value">${stats.averages?.teachers || 0}</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">متوسط المتابعة الأكاديمية</span>
+                <span class="stat-value">${stats.averages?.follow_up || 0}</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">متوسط الرحلات والأنشطة</span>
+                <span class="stat-value">${stats.averages?.trips || 0}</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">متوسط التواصل مع أولياء الأمور</span>
+                <span class="stat-value">${stats.averages?.parent_communication || 0}</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">متوسط نظام الامتحانات</span>
+                <span class="stat-value">${stats.averages?.exams || 0}</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">متوسط المناهج الإثرائية</span>
+                <span class="stat-value">${stats.averages?.enrichment_curriculum || 0}</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">متوسط إدارة المدرسة</span>
+                <span class="stat-value">${stats.averages?.school_management || 0}</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">متوسط بيئة المدرسة</span>
+                <span class="stat-value">${stats.averages?.school_environment || 0}</span>
+            </div>
+        `;
+        
+        statsSection.classList.remove('hidden');
+    }
+
+    // إرسال التقييم
+    document.getElementById('ratingForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        if (!AUTH_TOKEN || AUTH_TOKEN === '' || AUTH_TOKEN === 'null') {
+            showMessage('يرجى تسجيل الدخول أولاً', 'error');
+            setTimeout(() => {
+                window.location.href = 'login.html';
+            }, 2000);
+            return;
+        }
+
+        const submitBtn = document.getElementById('submitBtn');
+        const btnText = document.getElementById('btnText');
+        const btnSpinner = document.getElementById('btnSpinner');
+        
+        submitBtn.disabled = true;
+        btnText.textContent = hasExistingRating ? 'جاري التحديث...' : 'جاري الإرسال...';
+        btnSpinner.classList.remove('hidden');
+
+        const ratingData = {
+            education_level: parseInt(document.getElementById('education_level').value),
+            support: parseInt(document.getElementById('support').value),
+            teachers: parseInt(document.getElementById('teachers').value),
+            follow_up: parseInt(document.getElementById('follow_up').value),
+            trips: parseInt(document.getElementById('trips').value),
+            parent_communication: parseInt(document.getElementById('parent_communication').value),
+            exams: parseInt(document.getElementById('exams').value),
+            enrichment_curriculum: parseInt(document.getElementById('enrichment_curriculum').value),
+            school_management: parseInt(document.getElementById('school_management').value),
+            school_environment: parseInt(document.getElementById('school_environment').value)
+        };
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/schools/${SCHOOL_ID}/rate`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${AUTH_TOKEN}`,
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(ratingData)
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || 'فشل في إرسال التقييم');
+            }
+
+            showMessage(hasExistingRating ? 'تم تحديث تقييمك بنجاح! ✓' : 'تم إرسال تقييمك بنجاح! ✓', 'success');
+            
+            // تحديث حالة التقييم
+            hasExistingRating = true;
+            existingRatingData = ratingData;
+            
+            // إظهار زر الحذف
+            document.getElementById('deleteBtn').classList.remove('hidden');
+            
+            // إظهار حالة التقييم
+            document.getElementById('ratingStatus').style.display = 'block';
+            
+            // تغيير نص زر الإرسال
+            document.getElementById('btnText').textContent = 'تحديث التقييم';
+
+            // عرض الإحصائيات المحدثة
+            if (data.statistics) {
+                displayStats(data.statistics);
+            }
+
+        } catch (error) {
+            showMessage(error.message || 'حدث خطأ أثناء إرسال التقييم', 'error');
+        } finally {
+            submitBtn.disabled = false;
+            btnText.textContent = hasExistingRating ? 'تحديث التقييم' : 'إرسال التقييم';
+            btnSpinner.classList.add('hidden');
+        }
+    });
+
+    // حذف التقييم
+    document.getElementById('deleteBtn').addEventListener('click', async function() {
+        if (!confirm('هل أنت متأكد من حذف تقييمك؟')) {
+            return;
+        }
+
+        const deleteBtn = document.getElementById('deleteBtn');
+        const deleteBtnText = document.getElementById('deleteBtnText');
+        const deleteBtnSpinner = document.getElementById('deleteBtnSpinner');
+        
+        deleteBtn.disabled = true;
+        deleteBtnText.textContent = 'جاري الحذف...';
+        deleteBtnSpinner.classList.remove('hidden');
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/schools/${SCHOOL_ID}/rate`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${AUTH_TOKEN}`,
+                    'Accept': 'application/json'
+                }
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || 'فشل في حذف التقييم');
+            }
+
+            showMessage('تم حذف تقييمك بنجاح', 'success');
+            
+            // تحديث حالة التقييم
+            hasExistingRating = false;
+            existingRatingData = null;
+            
+            // إخفاء زر الحذف
+            deleteBtn.classList.add('hidden');
+            
+            // إخفاء حالة التقييم
+            document.getElementById('ratingStatus').style.display = 'none';
+            
+            // إعادة تعيين القيم
+            sliders.forEach(name => {
+                document.getElementById(name).value = 50;
+                document.getElementById(name).dispatchEvent(new Event('input'));
+            });
+            
+            // إعادة نص زر الإرسال
+            document.getElementById('btnText').textContent = 'إرسال التقييم';
+            
+            // تحديث الإحصائيات
+            loadRatings();
+
+        } catch (error) {
+            showMessage(error.message || 'حدث خطأ أثناء حذف التقييم', 'error');
+        } finally {
+            deleteBtn.disabled = false;
+            deleteBtnText.textContent = 'حذف تقييمي';
+            deleteBtnSpinner.classList.add('hidden');
+        }
+    });
+
+    // تحميل البيانات عند فتح الصفحة
+    window.addEventListener('load', function() {
+        // إظهار اسم المدرسة إذا كان متوفراً
+        if (localStorage.getItem('verified_school_name')) {
+            document.getElementById('schoolName').textContent = 
+                `تقييم: ${localStorage.getItem('verified_school_name')}`;
+        }
+        
+        loadRatings();
+    });
+    
+    document.addEventListener('DOMContentLoaded', () => {
+        loadRatings();
+    });
+
+</script>
+</body>
+</html>

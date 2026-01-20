@@ -1,0 +1,1613 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>madrsty</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .sidebar {
+            position: fixed;
+            right: 0;
+            top: 0;
+            width: 320px;
+            height: 100vh;
+            background: #ffffff;
+            box-shadow: -8px 0 40px rgba(0, 0, 0, 0.15);
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar.closed {
+            transform: translateX(320px);
+        }
+
+        .sidebar-header {
+            padding: 40px 30px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .sidebar-header h2 {
+            font-size: 26px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 700;
+        }
+
+        .user-profile {
+            padding: 30px 25px;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            background: #fafbfc;
+        }
+
+        .user-avatar {
+            width: 65px;
+            height: 65px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 26px;
+            flex-shrink: 0;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+            border-radius: 50%;
+        }
+
+        .user-details {
+            flex: 1;
+        }
+
+        .user-name {
+            font-weight: 700;
+            color: #1f2937;
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        .user-role {
+            color: #6b7280;
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .user-role i {
+            color: #667eea;
+            font-size: 12px;
+        }
+
+        .sidebar-menu {
+            padding: 25px 0;
+            flex: 1;
+        }
+
+        .menu-item {
+            padding: 18px 30px;
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            color: #4b5563;
+            text-decoration: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-right: 4px solid transparent;
+            cursor: pointer;
+            position: relative;
+            font-weight: 500;
+        }
+
+        .menu-item::before {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0;
+            height: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 4px 0 0 4px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .menu-item:hover {
+            background: linear-gradient(to left, #f9fafb 0%, #ffffff 100%);
+            color: #667eea;
+            padding-right: 35px;
+        }
+
+        .menu-item:hover::before {
+            width: 5px;
+            height: 60%;
+        }
+
+        .menu-item.active {
+            background: linear-gradient(to left, #ede9fe 0%, #f5f3ff 100%);
+            color: #667eea;
+            border-right-color: #667eea;
+            font-weight: 700;
+            padding-right: 26px;
+        }
+
+        .menu-item.active::before {
+            width: 5px;
+            height: 80%;
+        }
+
+        .menu-item i {
+            width: 26px;
+            font-size: 20px;
+            text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .menu-item:hover i {
+            transform: scale(1.15);
+        }
+
+        .menu-item span {
+            font-size: 16px;
+        }
+
+        .logout-section {
+            padding: 25px;
+            border-top: 1px solid #e5e7eb;
+            background: #fafbfc;
+        }
+
+        .logout-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 16px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+        }
+
+        .logout-btn:hover {
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(239, 68, 68, 0.4);
+        }
+
+        .sidebar-toggle {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: white;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            z-index: 1001;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .sidebar-toggle:hover {
+            transform: scale(1.08);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+        }
+
+        .toggle-icon {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .toggle-line {
+            width: 28px;
+            height: 3px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 3px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .sidebar-toggle.active .toggle-line:nth-child(1) {
+            transform: rotate(45deg) translate(8px, 8px);
+        }
+
+        .sidebar-toggle.active .toggle-line:nth-child(2) {
+            opacity: 0;
+            transform: translateX(20px);
+        }
+
+        .sidebar-toggle.active .toggle-line:nth-child(3) {
+            transform: rotate(-45deg) translate(8px, -8px);
+        }
+
+        .main-content {
+            margin-right: 320px;
+            padding: 40px;
+            transition: margin-right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            min-height: 100vh;
+        }
+
+        .main-content.expanded {
+            margin-right: 0;
+        }
+
+        .welcome-card {
+            background: white;
+            border-radius: 25px;
+            padding: 50px 45px;
+            margin-bottom: 40px;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.12);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .welcome-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(102, 126, 234, 0.08) 0%, transparent 70%);
+            border-radius: 50%;
+            transform: translate(30%, -30%);
+        }
+
+        .welcome-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .welcome-title {
+            color: #1f2937;
+            font-size: 38px;
+            font-weight: 800;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .welcome-subtitle {
+            color: #6b7280;
+            font-size: 18px;
+            font-weight: 500;
+            line-height: 1.6;
+        }
+
+        .comparison-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .comparison-card {
+            background: white;
+            border-radius: 25px;
+            padding: 40px;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.12);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .comparison-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .comparison-header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 30px;
+            border-bottom: 2px solid #f3f4f6;
+        }
+
+        .comparison-title {
+            font-size: 32px;
+            font-weight: 800;
+            color: #1f2937;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .comparison-title i {
+            color: #667eea;
+            font-size: 30px;
+        }
+
+        .comparison-subtitle {
+            color: #6b7280;
+            font-size: 18px;
+            font-weight: 500;
+            line-height: 1.6;
+        }
+
+        .schools-grid {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 40px;
+            align-items: start;
+        }
+
+        .school-card {
+            background: #f9fafb;
+            border-radius: 20px;
+            padding: 35px 30px;
+            border: 2px solid #e5e7eb;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .school-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 10px 40px rgba(102, 126, 234, 0.15);
+        }
+
+        .school-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .school-name {
+            font-size: 26px;
+            font-weight: 800;
+            color: #1f2937;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .school-badge {
+            display: inline-block;
+            padding: 8px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 14px;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .school-badge.other {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .vs-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+        }
+
+        .vs-circle {
+            width: 70px;
+            height: 70px;
+            background: white;
+            border: 4px solid #e5e7eb;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6b7280;
+            font-size: 20px;
+            font-weight: 800;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .rating-category {
+            margin-bottom: 20px;
+            padding: 20px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e5e7eb;
+            transition: all 0.3s ease;
+        }
+
+        .rating-category:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .category-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .category-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1f2937;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .category-name i {
+            color: #667eea;
+            font-size: 16px;
+        }
+
+        .rating-bar-container {
+            height: 10px;
+            background: #e5e7eb;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+
+        .rating-bar {
+            height: 100%;
+            border-radius: 5px;
+            transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .rating-bar.my-school {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .rating-bar.other-school {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .rating-value {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1f2937;
+            text-align: center;
+        }
+
+        .comparison-controls {
+            background: white;
+            border-radius: 25px;
+            padding: 35px;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.12);
+            margin-bottom: 40px;
+        }
+
+        .controls-header {
+            font-size: 24px;
+            font-weight: 800;
+            color: #1f2937;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .controls-header i {
+            color: #667eea;
+            font-size: 22px;
+        }
+
+        .school-select-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s;
+            background: #f9fafb;
+            color: #1f2937;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn-primary {
+            display: inline-block;
+            padding: 16px 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 16px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-decoration: none;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px;
+            color: #6b7280;
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .loading i {
+            font-size: 40px;
+            margin-bottom: 15px;
+            color: #667eea;
+            animation: spin 1s linear infinite;
+        }
+
+        .error-message {
+            background: #fee2e2;
+            border: 2px solid #ef4444;
+            color: #dc2626;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .success-message {
+            background: #d1fae5;
+            border: 2px solid #10b981;
+            color: #059669;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .info-message {
+            background: #dbeafe;
+            border: 2px solid #3b82f6;
+            color: #1d4ed8;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .statistics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-top: 40px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 18px;
+            padding: 25px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+            border: 2px solid #e5e7eb;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .stat-card:hover {
+            border-color: #667eea;
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.15);
+        }
+
+        .stat-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 22px;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .stat-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 800;
+            color: #1f2937;
+            margin-bottom: 10px;
+        }
+
+        .stat-diff {
+            font-size: 14px;
+            font-weight: 600;
+            padding: 6px 12px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+
+        .stat-diff.positive {
+            background: #d1fae5;
+            color: #059669;
+        }
+
+        .stat-diff.negative {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .stat-diff.neutral {
+            background: #e5e7eb;
+            color: #6b7280;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 999;
+            display: none;
+        }
+
+        .overlay.active {
+            display: block;
+        }
+
+        .rating-summary {
+            background: linear-gradient(135deg, #667eea20 0%, #764ba220 100%);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 2px solid #667eea40;
+        }
+
+        .summary-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .summary-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .summary-item {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .summary-label {
+            font-size: 14px;
+            color: #6b7280;
+            margin-bottom: 5px;
+        }
+
+        .summary-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 100%;
+                max-width: 340px;
+            }
+
+            .sidebar.closed {
+                transform: translateX(100%);
+            }
+
+            .main-content {
+                margin-right: 0;
+            }
+
+            .schools-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .vs-container {
+                order: -1;
+                margin-bottom: 20px;
+            }
+
+            .school-select-container {
+                grid-template-columns: 1fr;
+            }
+
+            .statistics-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 25px 20px;
+            }
+
+            .welcome-card {
+                padding: 35px 25px;
+            }
+
+            .welcome-title {
+                font-size: 28px;
+            }
+
+            .comparison-card {
+                padding: 25px 20px;
+            }
+
+            .statistics-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .rating-category {
+                padding: 15px;
+                margin-bottom: 15px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .comparison-header {
+                padding-bottom: 20px;
+                margin-bottom: 30px;
+            }
+
+            .comparison-title {
+                font-size: 24px;
+            }
+
+            .school-card {
+                padding: 25px 20px;
+            }
+
+            .rating-category {
+                padding: 12px;
+                margin-bottom: 12px;
+            }
+
+            .category-name {
+                font-size: 16px;
+            }
+
+            .rating-value {
+                font-size: 14px;
+            }
+        }
+
+        .footer {
+            position: relative;
+            width: 100%;
+            padding: 20px;
+            background: linear-gradient(to top, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.85));
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+            text-align: center;
+            box-shadow: 0 -5px 25px rgba(0, 0, 0, 0.03);
+            margin-top: 60px;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .copyright {
+            color: #4b5563;
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        .university-name {
+            color: #1f2937;
+            font-weight: 700;
+            font-size: 18px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+    </style>
+</head>
+<body>
+    <div class="overlay" id="overlay"></div>
+
+    <button class="sidebar-toggle" id="toggleBtn" onclick="toggleSidebar()">
+        <div class="toggle-icon">
+            <div class="toggle-line"></div>
+            <div class="toggle-line"></div>
+            <div class="toggle-line"></div>
+        </div>
+    </button>
+
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h2><i class="fas fa-graduation-cap"></i></h2>
+        </div>
+
+        <div class="user-profile">
+            <div class="user-avatar" id="userAvatar">M</div>
+            <div class="user-details">
+                <div class="user-name" id="userName">جاري التحميل...</div>
+                <div class="user-role">
+                    <i class="fas fa-crown"></i>
+                    مدير
+                </div>
+            </div>
+        </div>
+
+        <nav class="sidebar-menu">
+            <a href="manager.html" class="menu-item">
+                <i class="fas fa-home"></i>
+                <span>الرئيسية</span>
+            </a>
+            <a href="profile.html" class="menu-item">
+                <i class="fas fa-user-circle"></i>
+                <span>الملف الشخصي</span>
+            </a>
+            <a href="school-info.html" class="menu-item">
+                <i class="fas fa-school"></i>
+                <span>معلومات المدرسة</span>
+            </a>
+            <a href="school-ratings.html" class="menu-item">
+                <i class="fas fa-star"></i>
+                <span>التقييمات</span>
+            </a>
+            <a href="ratings.html" class="menu-item active">
+                <i class="fas fa-chart-line"></i>
+                <span>مقارنة المدارس</span>
+            </a>
+            <a href="create_post.html" class="menu-item">
+                <i class="fas fa-pen-to-square"></i>
+                <span>نشر منشور</span>
+            </a>
+            <a href="manage-posts.html" class="menu-item">
+                <i class="fas fa-list-check"></i>
+                <span>إدارة المنشورات</span>
+            </a>
+            <a href="view-posts.html" class="menu-item">
+                <i class="fas fa-newspaper"></i>
+                <span>مشاهدة المنشورات</span>
+            </a>
+        </nav>
+
+        <div class="logout-section">
+            <button class="logout-btn" onclick="logout()">
+                <i class="fas fa-right-from-bracket"></i>
+                <span>تسجيل خروج</span>
+            </button>
+        </div>
+    </div>
+
+    <div class="main-content" id="mainContent">
+        <div class="welcome-card">
+            <div class="welcome-content">
+                <h1 class="welcome-title">مقارنة المدارس</h1>
+                <p class="welcome-subtitle">قارن أداء مدرستك مع مدارس أخرى لمشاهدة نقاط القوة والضعف</p>
+            </div>
+        </div>
+
+        <div class="comparison-controls">
+            <h2 class="controls-header">
+                <i class="fas fa-sliders-h"></i>
+                اختيار المدرسة للمقارنة
+            </h2>
+            
+            <div class="school-select-container">
+                <div class="form-group">
+                    <label class="form-label">مدرستي الحالية</label>
+                    <input type="text" class="form-control" id="mySchoolName" readonly>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">اختر مدرسة للمقارنة</label>
+                    <select class="form-control" id="otherSchoolSelect">
+                        <option value="">اختر مدرسة...</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div id="messages"></div>
+            
+            <button class="btn-primary" id="compareBtn" onclick="compareSchools()">
+                <i class="fas fa-chart-bar"></i>
+                <span>مقارنة الآن</span>
+            </button>
+        </div>
+
+        <div class="comparison-container" id="comparisonResults" style="display: none;">
+            <div class="comparison-card">
+                <div class="comparison-header">
+                    <h2 class="comparison-title">
+                        <i class="fas fa-balance-scale"></i>
+                        نتائج المقارنة
+                    </h2>
+                    <p class="comparison-subtitle">مقارنة شاملة بين مدرستك والمدرسة المختارة</p>
+                </div>
+
+                <div id="comparisonSummary"></div>
+
+                <div class="schools-grid">
+                    <div class="school-card">
+                        <div class="school-header">
+                            <h3 class="school-name" id="mySchoolResultName">مدرستي</h3>
+                            <span class="school-badge">مدرستي</span>
+                        </div>
+                        <div id="mySchoolRatings"></div>
+                    </div>
+
+                    <div class="vs-container">
+                        <div class="vs-circle">VS</div>
+                    </div>
+
+                    <div class="school-card">
+                        <div class="school-header">
+                            <h3 class="school-name" id="otherSchoolResultName">المدرسة الأخرى</h3>
+                            <span class="school-badge other">المقارنة</span>
+                        </div>
+                        <div id="otherSchoolRatings"></div>
+                    </div>
+                </div>
+
+                <div class="statistics-grid" id="overallStats"></div>
+            </div>
+        </div>
+
+        <div class="comparison-card" id="loadingState" style="display: none;">
+            <div class="loading">
+                <i class="fas fa-circle-notch"></i>
+                <p>جاري تحميل بيانات المقارنة...</p>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <p class="copyright">
+                <span>@2026</span>
+                <span class="university-name">ypu</span>
+            </p>
+        </div>
+    </footer>
+
+    <script>
+const API_URL = 'http://127.0.0.1:8000/api';
+const BASE_URL = 'http://127.0.0.1:8000';
+
+function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+    const mainContent = document.getElementById('mainContent');
+    const toggleBtn = document.getElementById('toggleBtn');
+    
+    const isClosed = sidebar.classList.contains('closed');
+    
+    if (isClosed) {
+        sidebar.classList.remove('closed');
+        overlay.classList.add('active');
+        mainContent.classList.remove('expanded');
+        toggleBtn.classList.add('active');
+    } else {
+        sidebar.classList.add('closed');
+        overlay.classList.remove('active');
+        mainContent.classList.add('expanded');
+        toggleBtn.classList.remove('active');
+    }
+}
+
+function checkAuth() {
+    const token = localStorage.getItem('authToken');
+    const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
+
+    if (!token || !user || (user.role !== 'manager' && user.role !== 'Manager')) {
+        window.location.href = 'index.html';
+        return null;
+    }
+
+    return { token, user };
+}
+
+async function loadUserInfo() {
+    const auth = checkAuth();
+    if (!auth) return;
+
+    const { token, user } = auth;
+    const userNameElement = document.getElementById('userName');
+    const userAvatarElement = document.getElementById('userAvatar');
+    
+    userNameElement.textContent = user.name || 'مدير';
+    userAvatarElement.textContent = (user.name || 'M')[0].toUpperCase();
+    
+    try {
+        const response = await fetch(`${API_URL}/me`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Accept': 'application/json'
+            }
+        });
+
+        if (response.ok) {
+            const profileData = await response.json();
+            
+            if (profileData.image) {
+                const imageUrl = `${BASE_URL}/storage/${profileData.image}`;
+                const img = document.createElement('img');
+                img.src = imageUrl;
+                img.alt = 'صورة المستخدم';
+                
+                img.onerror = function() {
+                    this.remove();
+                    userAvatarElement.textContent = (user.name || 'M')[0].toUpperCase();
+                };
+                
+                userAvatarElement.innerHTML = '';
+                userAvatarElement.appendChild(img);
+            }
+        }
+    } catch (error) {
+        console.log('لم يتم العثور على صورة للمستخدم');
+    }
+}
+
+async function loadSchools() {
+    const auth = checkAuth();
+    if (!auth) return;
+
+    const { token, user } = auth;
+    const mySchoolName = document.getElementById('mySchoolName');
+    const otherSchoolSelect = document.getElementById('otherSchoolSelect');
+
+    try {
+        // 1. جلب معلومات مدرستي
+        const mySchoolResponse = await fetch(`${API_URL}/schools/${user.school_id}`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+        });
+
+        if (mySchoolResponse.ok) {
+            const mySchoolData = await mySchoolResponse.json();
+            mySchoolName.value = mySchoolData.name || 'مدرستي';
+        } else {
+            console.error('Error loading my school:', await mySchoolResponse.text());
+        }
+
+        // 2. جلب كل المدارس للمقارنة (ما عدا مدرستي)
+        const allSchoolsResponse = await fetch(`${API_URL}/schools/for-comparison`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+        });
+
+        if (allSchoolsResponse.ok) {
+            const schools = await allSchoolsResponse.json();
+            
+            // تفريغ القائمة
+            otherSchoolSelect.innerHTML = '<option value="">اختر مدرسة...</option>';
+            
+            // التأكد من وجود مدارس
+            if (schools && schools.length > 0) {
+                schools.forEach(school => {
+                    // التأكد من أن المدرسة ليست مدرستي (احتياط إضافي)
+                    if (school.id !== user.school_id) {
+                        const option = document.createElement('option');
+                        option.value = school.id;
+                        option.textContent = school.name;
+                        otherSchoolSelect.appendChild(option);
+                    }
+                });
+                
+                console.log(`تم تحميل ${schools.length} مدرسة للمقارنة`);
+            } else {
+                otherSchoolSelect.innerHTML = '<option value="">لا توجد مدارس أخرى للمقارنة</option>';
+                console.warn('لا توجد مدارس متاحة للمقارنة');
+            }
+        } else {
+            const errorText = await allSchoolsResponse.text();
+            console.error('Error loading schools:', errorText);
+            showMessage('حدث خطأ في تحميل قائمة المدارس', 'error');
+            otherSchoolSelect.innerHTML = '<option value="">خطأ في التحميل</option>';
+        }
+    } catch (error) {
+        console.error('Error in loadSchools:', error);
+        showMessage('حدث خطأ في الاتصال بالخادم', 'error');
+        otherSchoolSelect.innerHTML = '<option value="">خطأ في التحميل</option>';
+    }
+}
+
+async function compareSchools() {
+    const auth = checkAuth();
+    if (!auth) return;
+
+    const { token } = auth;
+    const otherSchoolSelect = document.getElementById('otherSchoolSelect');
+    const compareBtn = document.getElementById('compareBtn');
+    const messagesDiv = document.getElementById('messages');
+    const loadingState = document.getElementById('loadingState');
+    const comparisonResults = document.getElementById('comparisonResults');
+
+    const otherSchoolId = otherSchoolSelect.value;
+
+    if (!otherSchoolId) {
+        showMessage('الرجاء اختيار مدرسة للمقارنة', 'error');
+        return;
+    }
+
+    compareBtn.disabled = true;
+    compareBtn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i><span>جاري المقارنة...</span>';
+    messagesDiv.innerHTML = '';
+    loadingState.style.display = 'block';
+    comparisonResults.style.display = 'none';
+
+    try {
+        const response = await fetch(`${API_URL}/manager/schools/compare`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({
+                other_school_id: parseInt(otherSchoolId)
+            })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.message || 'حدث خطأ في المقارنة');
+        }
+
+        loadingState.style.display = 'none';
+        displayComparisonResults(data);
+        comparisonResults.style.display = 'grid';
+        
+        // Scroll to results
+        setTimeout(() => {
+            comparisonResults.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
+
+    } catch (error) {
+        console.error('Error comparing schools:', error);
+        showMessage(error.message || 'حدث خطأ في المقارنة', 'error');
+        loadingState.style.display = 'none';
+    } finally {
+        compareBtn.disabled = false;
+        compareBtn.innerHTML = '<i class="fas fa-chart-bar"></i><span>مقارنة الآن</span>';
+    }
+}
+
+function displayComparisonResults(data) {
+    document.getElementById('mySchoolResultName').textContent = data.my_school.name;
+    document.getElementById('otherSchoolResultName').textContent = data.other_school.name;
+
+    displayComparisonSummary(data.my_school.ratings, data.other_school.ratings);
+    displaySchoolRatings(data.my_school.ratings, 'mySchoolRatings', 'my-school');
+    displaySchoolRatings(data.other_school.ratings, 'otherSchoolRatings', 'other-school');
+    displayOverallStatistics(data.my_school.ratings, data.other_school.ratings);
+}
+
+function displayComparisonSummary(myRatings, otherRatings) {
+    const container = document.getElementById('comparisonSummary');
+    const myOverall = myRatings.overall_average || 0;
+    const otherOverall = otherRatings.overall_average || 0;
+    const diff = (myOverall - otherOverall).toFixed(1);
+    
+    let summaryText = '';
+    let summaryIcon = '';
+    let summaryClass = '';
+    
+    if (myOverall > otherOverall) {
+        summaryText = `مدرستك متفوقة بمقدار ${Math.abs(diff)} نقطة`;
+        summaryIcon = 'fas fa-crown';
+        summaryClass = 'success-message';
+    } else if (myOverall < otherOverall) {
+        summaryText = `المدرسة الأخرى متفوقة بمقدار ${Math.abs(diff)} نقطة`;
+        summaryIcon = 'fas fa-exclamation-triangle';
+        summaryClass = 'error-message';
+    } else {
+        summaryText = 'المدرستان متساويتان في الأداء العام';
+        summaryIcon = 'fas fa-equals';
+        summaryClass = 'info-message';
+    }
+    
+    container.innerHTML = `
+        <div class="${summaryClass}">
+            <i class="${summaryIcon}"></i>
+            <span>${summaryText}</span>
+        </div>
+        
+        <div class="rating-summary">
+            <h3 class="summary-title">
+                <i class="fas fa-chart-pie"></i>
+                ملخص المقارنة
+            </h3>
+            <div class="summary-content">
+                <div class="summary-item">
+                    <div class="summary-label">متوسط مدرستي</div>
+                    <div class="summary-value">${myOverall.toFixed(1)}/5</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">متوسط المدرسة الأخرى</div>
+                    <div class="summary-value">${otherOverall.toFixed(1)}/5</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">الفرق</div>
+                    <div class="summary-value" style="color: ${myOverall > otherOverall ? '#059669' : myOverall < otherOverall ? '#dc2626' : '#6b7280'}">
+                        ${diff > 0 ? '+' : ''}${diff}
+                    </div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">عدد المقيمين الإجمالي</div>
+                    <div class="summary-value">${(myRatings.total_raters + otherRatings.total_raters)} مقيم</div>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function displaySchoolRatings(ratings, containerId, schoolType) {
+    const container = document.getElementById(containerId);
+    
+    if (!ratings || ratings.total_raters === 0) {
+        container.innerHTML = `
+            <div class="rating-category" style="text-align: center; padding: 40px;">
+                <i class="fas fa-info-circle" style="font-size: 48px; color: #9ca3af; margin-bottom: 15px;"></i>
+                <p style="color: #6b7280; font-size: 16px;">لا توجد بيانات تقييم متاحة</p>
+            </div>
+        `;
+        return;
+    }
+
+    const colorClass = schoolType === 'my-school' ? 'my-school' : 'other-school';
+    
+    // تحديث الفئات لتتوافق مع الباك
+    const categories = [
+        { key: 'overall_average', name: 'المتوسط العام', icon: 'fas fa-star' },
+        { key: 'teaching_quality_average', name: 'جودة التعليم', icon: 'fas fa-chalkboard-teacher' },
+        { key: 'facilities_average', name: 'الدعم', icon: 'fas fa-hands-helping' },
+        { key: 'cleanliness_average', name: 'المعلمين', icon: 'fas fa-user-graduate' },
+        { key: 'follow_up_average', name: 'المتابعة', icon: 'fas fa-clipboard-check' },
+        { key: 'activities_average', name: 'الرحلات', icon: 'fas fa-bus' },
+        { key: 'parent_communication_average', name: 'تواصل الأهل', icon: 'fas fa-comments' },
+        { key: 'exams_average', name: 'الامتحانات', icon: 'fas fa-file-alt' },
+        { key: 'enrichment_curriculum_average', name: 'المنهج الإثرائي', icon: 'fas fa-book-open' },
+        { key: 'school_management_average', name: 'إدارة المدرسة', icon: 'fas fa-user-tie' },
+        { key: 'school_environment_average', name: 'بيئة المدرسة', icon: 'fas fa-school' }
+    ];
+
+    let html = '';
+    
+    // عرض المتوسط العام أولاً
+    const overallCat = categories.find(cat => cat.key === 'overall_average');
+    if (overallCat) {
+        const value = ratings[overallCat.key] || 0;
+        const percentage = (value / 5) * 100;
+        
+        html += `
+            <div class="rating-category" style="background: linear-gradient(135deg, #667eea10 0%, #764ba210 100%); border: 2px solid #667eea30;">
+                <div class="category-header">
+                    <div class="category-name">
+                        <i class="${overallCat.icon}"></i>
+                        ${overallCat.name}
+                    </div>
+                    <div class="rating-value">${value.toFixed(1)}/5</div>
+                </div>
+                <div class="rating-bar-container">
+                    <div class="rating-bar ${colorClass}" style="width: ${percentage}%"></div>
+                </div>
+            </div>
+        `;
+    }
+
+    // عرض باقي الفئات
+    const detailCategories = categories.filter(cat => cat.key !== 'overall_average');
+    
+    detailCategories.forEach(cat => {
+        const value = ratings[cat.key] || 0;
+        const percentage = (value / 5) * 100;
+        
+        html += `
+            <div class="rating-category">
+                <div class="category-header">
+                    <div class="category-name">
+                        <i class="${cat.icon}"></i>
+                        ${cat.name}
+                    </div>
+                    <div class="rating-value">${value.toFixed(1)}/5</div>
+                </div>
+                <div class="rating-bar-container">
+                    <div class="rating-bar ${colorClass}" style="width: ${percentage}%"></div>
+                </div>
+            </div>
+        `;
+    });
+
+    // عرض عدد المقيمين
+    html += `
+        <div class="rating-category" style="background: #f3f4f6; border: 2px dashed #9ca3af;">
+            <div class="category-header">
+                <div class="category-name">
+                    <i class="fas fa-users"></i>
+                    عدد المقيّمين
+                </div>
+                <div class="rating-value">${ratings.total_raters}</div>
+            </div>
+        </div>
+    `;
+
+    container.innerHTML = html;
+}
+
+function displayOverallStatistics(myRatings, otherRatings) {
+    const container = document.getElementById('overallStats');
+    
+    if (!myRatings || !otherRatings) {
+        container.innerHTML = '<p style="text-align: center; color: #6b7280;">لا توجد بيانات كافية للإحصائيات</p>';
+        return;
+    }
+
+    const myAvg = myRatings.overall_average || 0;
+    const otherAvg = otherRatings.overall_average || 0;
+    const diff = myAvg - otherAvg;
+
+    let diffText = '';
+    let diffClass = '';
+    
+    if (diff > 0) {
+        diffText = `+${diff.toFixed(1)} أفضل`;
+        diffClass = 'positive';
+    } else if (diff < 0) {
+        diffText = `${Math.abs(diff).toFixed(1)} أقل`;
+        diffClass = 'negative';
+    } else {
+        diffText = 'متساوي';
+        diffClass = 'neutral';
+    }
+
+    // تحديث الفئات لتتوافق مع الباك
+    const categories = [
+        'teaching_quality_average',
+        'facilities_average',
+        'cleanliness_average',
+        'follow_up_average',
+        'activities_average',
+        'parent_communication_average',
+        'exams_average',
+        'enrichment_curriculum_average',
+        'school_management_average',
+        'school_environment_average'
+    ];
+    
+    let myBetterCount = 0;
+    let otherBetterCount = 0;
+    let equalCount = 0;
+    
+    categories.forEach(cat => {
+        const myValue = myRatings[cat] || 0;
+        const otherValue = otherRatings[cat] || 0;
+        if (myValue > otherValue) myBetterCount++;
+        else if (myValue < otherValue) otherBetterCount++;
+        else equalCount++;
+    });
+
+    const totalCategories = categories.length;
+    const myBetterPercentage = totalCategories > 0 ? Math.round((myBetterCount / totalCategories) * 100) : 0;
+    const otherBetterPercentage = totalCategories > 0 ? Math.round((otherBetterCount / totalCategories) * 100) : 0;
+    const equalPercentage = totalCategories > 0 ? Math.round((equalCount / totalCategories) * 100) : 0;
+
+    container.innerHTML = `
+        <div class="stat-card">
+            <div class="stat-header">
+                <div class="stat-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="stat-title">المتوسط العام</div>
+            </div>
+            <div class="stat-value">${myAvg.toFixed(1)}/5</div>
+            <div class="stat-diff ${diffClass}">${diffText}</div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-header">
+                <div class="stat-icon">
+                    <i class="fas fa-trophy"></i>
+                </div>
+                <div class="stat-title">مجالات التميز</div>
+            </div>
+            <div class="stat-value">${myBetterCount}</div>
+            <div class="stat-diff positive">${myBetterPercentage}% من المجالات</div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-header">
+                <div class="stat-icon">
+                    <i class="fas fa-bullseye"></i>
+                </div>
+                <div class="stat-title">مجالات التحسين</div>
+            </div>
+            <div class="stat-value">${otherBetterCount}</div>
+            <div class="stat-diff ${otherBetterCount > 0 ? 'negative' : 'neutral'}">
+                ${otherBetterCount > 0 ? `${otherBetterPercentage}% تحتاج تحسين` : 'ممتاز'}
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-header">
+                <div class="stat-icon">
+                    <i class="fas fa-balance-scale"></i>
+                </div>
+                <div class="stat-title">المجالات المتساوية</div>
+            </div>
+            <div class="stat-value">${equalCount}</div>
+            <div class="stat-diff neutral">
+                ${equalCount > 0 ? `${equalPercentage}% متساوية` : 'لا يوجد'}
+            </div>
+        </div>
+    `;
+}
+
+function showMessage(message, type) {
+    const messagesDiv = document.getElementById('messages');
+    const icon = type === 'error' ? 'fas fa-exclamation-circle' : 
+                type === 'success' ? 'fas fa-check-circle' : 'fas fa-info-circle';
+    const className = type === 'error' ? 'error-message' : 
+                     type === 'success' ? 'success-message' : 'info-message';
+    
+    messagesDiv.innerHTML = `
+        <div class="${className}">
+            <i class="${icon}"></i>
+            <span>${message}</span>
+        </div>
+    `;
+    
+    if (type === 'success' || type === 'info') {
+        setTimeout(() => {
+            messagesDiv.innerHTML = '';
+        }, 5000);
+    }
+}
+
+function logout() {
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('currentUser');
+    window.location.href = 'index.html';
+}
+
+// إغلاق القائمة عند الضغط على الـ overlay
+document.getElementById('overlay')?.addEventListener('click', toggleSidebar);
+
+// تحميل البيانات عند فتح الصفحة
+document.addEventListener('DOMContentLoaded', () => {
+    loadUserInfo();
+    loadSchools();
+});
+    </script>
+</body>
+</html>

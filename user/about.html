@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>madrasty</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f3f4f6;
+            min-height: 100vh;
+            display: flex;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 320px;
+            background: #ffffff;
+            min-height: 100vh;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            right: 0;
+            top: 0;
+            z-index: 100;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-header {
+            padding: 30px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            position: relative;
+        }
+
+        .sidebar-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .sidebar-subtitle {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .sidebar-menu {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .menu-section {
+            margin-bottom: 30px;
+        }
+
+        .menu-section-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: #9ca3af;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+            padding: 0 10px;
+        }
+
+        .accordion-item {
+            background: #f9fafb;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s;
+            margin-bottom: 10px;
+        }
+
+        .accordion-item.active {
+            border-color: #667eea;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+        }
+
+        .accordion-header {
+            display: flex;
+            align-items: center;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: transparent;
+        }
+
+        .accordion-item.active .accordion-header {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+        }
+
+        .accordion-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .accordion-icon svg {
+            width: 20px;
+            height: 20px;
+            color: white;
+        }
+
+        .accordion-title {
+            flex: 1;
+            margin: 0 12px;
+            font-size: 15px;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .accordion-arrow {
+            width: 20px;
+            height: 20px;
+            color: #9ca3af;
+            transition: transform 0.3s;
+            flex-shrink: 0;
+        }
+
+        .accordion-item.active .accordion-arrow {
+            transform: rotate(180deg);
+            color: #667eea;
+        }
+
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .accordion-content-inner {
+            padding: 0 16px 16px 16px;
+        }
+
+        .accordion-description {
+            font-size: 13px;
+            color: #6b7280;
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+
+        .accordion-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.3s;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .accordion-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.3);
+        }
+
+        .accordion-link svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .sidebar-footer {
+            padding: 20px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .logout-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .logout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3);
+        }
+
+        .logout-btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-right: 320px;
+            flex: 1;
+            padding: 0;
+            transition: margin-right 0.3s ease;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(40px, -40px) rotate(8deg); }
+            50% { transform: translate(-30px, 30px) rotate(-8deg); }
+            75% { transform: translate(30px, 15px) rotate(5deg); }
+        }
+
+        /* Menu Toggle Button */
+        .menu-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 101;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 12px 16px;
+            cursor: pointer;
+            box-shadow: 0 4px 16px rgba(102, 126, 234, 0.4);
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .menu-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        .menu-toggle svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        /* Sidebar states */
+        .sidebar.collapsed {
+            transform: translateX(100%);
+        }
+
+        .main-content.expanded {
+            margin-right: 0;
+        }
+
+        /* Landing Page Styles */
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+            padding: 40px 20px;
+        }
+
+        .header-section {
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 32px;
+            padding: 60px 50px;
+            margin-bottom: 30px;
+            box-shadow: 0 30px 90px rgba(0, 0, 0, 0.25), 
+                        0 15px 40px rgba(102, 126, 234, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            text-align: center;
+            animation: slideUp 0.6s ease;
+        }
+
+        @keyframes slideUp {
+            from { 
+                opacity: 0; 
+                transform: translateY(40px); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0); 
+            }
+        }
+
+        .logo {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4),
+                        0 0 0 8px rgba(255, 255, 255, 0.5);
+            animation: pulse 3s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { 
+                box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4),
+                           0 0 0 8px rgba(255, 255, 255, 0.5);
+            }
+            50% { 
+                box-shadow: 0 15px 45px rgba(102, 126, 234, 0.6),
+                           0 0 0 12px rgba(255, 255, 255, 0.7);
+            }
+        }
+
+        .logo svg {
+            width: 50px;
+            height: 50px;
+            color: white;
+            filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.2));
+        }
+
+        h1 {
+            color: #1f2937;
+            font-size: 42px;
+            font-weight: 800;
+            margin-bottom: 15px;
+            letter-spacing: -1px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            color: #6b7280;
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .content-section {
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 32px;
+            padding: 50px 50px;
+            margin-bottom: 30px;
+            box-shadow: 0 30px 90px rgba(0, 0, 0, 0.25), 
+                        0 15px 40px rgba(102, 126, 234, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            animation: slideUp 0.7s ease;
+        }
+
+        h2 {
+            color: #1f2937;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        h2 svg {
+            width: 32px;
+            height: 32px;
+            color: #667eea;
+            filter: drop-shadow(0 2px 4px rgba(102, 126, 234, 0.3));
+        }
+
+        .problem-section {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            padding: 30px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            border: 2px solid #fbbf24;
+            box-shadow: 0 4px 15px rgba(251, 191, 36, 0.3);
+        }
+
+        .solution-section {
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            padding: 30px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            border: 2px solid #6ee7b7;
+            box-shadow: 0 4px 15px rgba(110, 231, 183, 0.3);
+        }
+
+        p {
+            color: #374151;
+            font-size: 17px;
+            line-height: 1.9;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #f9fafb 0%, #ffffff 100%);
+            padding: 30px;
+            border-radius: 20px;
+            border: 2px solid #e5e7eb;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transform: scaleX(0);
+            transition: transform 0.4s;
+        }
+
+        .feature-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 35px rgba(102, 126, 234, 0.25);
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            box-shadow: 0 6px 15px rgba(102, 126, 234, 0.35);
+            transition: all 0.3s;
+        }
+
+        .feature-card:hover .feature-icon {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .feature-icon svg {
+            width: 30px;
+            height: 30px;
+            color: white;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+        }
+
+        .feature-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 12px;
+        }
+
+        .feature-desc {
+            font-size: 15px;
+            color: #6b7280;
+            line-height: 1.7;
+            margin-bottom: 0;
+        }
+
+        .highlight {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
+        }
+
+        .cta-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 32px;
+            padding: 50px;
+            text-align: center;
+            box-shadow: 0 30px 90px rgba(0, 0, 0, 0.25), 
+                        0 15px 40px rgba(102, 126, 234, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            animation: slideUp 0.8s ease;
+        }
+
+        .cta-section h2 {
+            color: white;
+            margin-bottom: 20px;
+            justify-content: center;
+        }
+
+        .cta-section p {
+            color: rgba(255, 255, 255, 0.95);
+            font-size: 18px;
+            margin-bottom: 30px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 18px 40px;
+            background: white;
+            color: #667eea;
+            border: none;
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            text-decoration: none;
+            letter-spacing: 0.5px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Mobile responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(100%);
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-right: 0;
+            }
+
+            .header-section,
+            .content-section {
+                padding: 40px 30px;
+            }
+
+            h1 {
+                font-size: 32px;
+            }
+
+            h2 {
+                font-size: 24px;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .cta-section {
+                padding: 40px 30px;
+            }
+        }
+             .footer {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 25px 20px;
+            margin-top: auto;
+            border-top: 2px solid rgba(102, 126, 234, 0.2);
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .footer-content {
+            max-width: 900px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .footer-decoration {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .footer-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            animation: dotPulse 2s ease-in-out infinite;
+        }
+
+        .footer-dot:nth-child(2) {
+            animation-delay: 0.3s;
+        }
+
+        .footer-dot:nth-child(3) {
+            animation-delay: 0.6s;
+        }
+
+        @keyframes dotPulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 0.7;
+            }
+            50% {
+                transform: scale(1.3);
+                opacity: 1;
+            }
+        }
+
+        .copyright {
+            font-size: 14px;
+            color: #6b7280;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .university-name {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 800;
+            font-size: 16px;
+            letter-spacing: 1px;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(100%);
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-right: 0;
+            }
+
+            .profile-card {
+                padding: 40px 30px;
+            }
+
+            h2 {
+                font-size: 26px;
+            }
+
+            .profile-avatar {
+                width: 100px;
+                height: 100px;
+            }
+
+            .footer {
+                padding: 20px 15px;
+            }
+
+            .copyright {
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Menu Toggle Button -->
+    <button class="menu-toggle" id="menuToggle" onclick="toggleSidebar()">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+        <span>القائمة</span>
+    </button>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-title">مدرستي</div>
+            <div class="sidebar-subtitle">نظام إدارة المدارس</div>
+        </div>
+
+        <div class="sidebar-menu">
+            <div class="menu-section">
+                <div class="menu-section-title">القائمة الرئيسية</div>
+                
+                <!-- About School -->
+                <div class="accordion-item" id="accordion1">
+                    <div class="accordion-header" onclick="toggleAccordion('accordion1')">
+                        <div class="accordion-icon">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <div class="accordion-title">حول الموقع</div>
+                        <svg class="accordion-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-content-inner">
+                            <p class="accordion-description">تعرف على سبب انشاء الموقع، أهدافه، والخدمات التي يقدمها.</p>
+                            <a href="about.html" class="accordion-link">
+                                <span>عرض المعلومات</span>
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- View School -->
+                <div class="accordion-item" id="accordion2">
+                    <div class="accordion-header" onclick="toggleAccordion('accordion2')">
+                        <div class="accordion-icon">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                            </svg>
+                        </div>
+                        <div class="accordion-title">عرض المدرسة</div>
+                        <svg class="accordion-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-content-inner">
+                            <p class="accordion-description">شاهد المداراس المتاحه في الموقع مع الاسعار والحسابات وبحث عن مدرسه محدده ومتابعه مدرسه معينه</p>
+                            <a href="view_school.html" class="accordion-link">
+                                <span>استعراض التفاصيل</span>
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Compare Schools -->
+                <div class="accordion-item" id="accordionCompare">
+                    <div class="accordion-header" onclick="toggleAccordion('accordionCompare')">
+                        <div class="accordion-icon">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
+                            </svg>
+                        </div>
+                        <div class="accordion-title">مقارنة المدارس</div>
+                        <svg class="accordion-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-content-inner">
+                            <p class="accordion-description">قارن بين مدرستين لتحديد الأفضل بناءً على الرسوم والخدمات والمعلومات المتاحة.</p>
+                            <a href="compare.html" class="accordion-link">
+                                <span>ابدأ المقارنة</span>
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Compare Ratings -->
+                <div class="accordion-item " id="accordionCompareRatings">
+                    <div class="accordion-header" onclick="toggleAccordion('accordionCompareRatings')">
+                        <div class="accordion-icon">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
+                            </svg>
+                        </div>
+                        <div class="accordion-title">مقارنة التقييمات</div>
+                        <svg class="accordion-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-content-inner">
+                            <p class="accordion-description">قارن بين تقييمات مدرستين لتحديد الأفضل بناءً على تجارب المستخدمين.</p>
+                            <a href="compare_ratings.html" class="accordion-link">
+                                <span>ابدأ المقارنة</span>
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Profile -->
+                <div class="accordion-item" id="accordion3">
+                    <div class="accordion-header" onclick="toggleAccordion('accordion3')">
+                        <div class="accordion-icon">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                            </svg>
+                        </div>
+                        <div class="accordion-title">الملف الشخصي</div>
+                        <svg class="accordion-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-content-inner">
+                            <p class="accordion-description">عرض وتعديل معلوماتك الشخصية، تحديث صورة البروفايل، وإدارة حسابك.</p>
+                            <a href="profile.html" class="accordion-link">
+                                <span>انتقل للملف</span>
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- QR Code -->
+                <div class="accordion-item" id="accordion4">
+                    <div class="accordion-header" onclick="toggleAccordion('accordion4')">
+                        <div class="accordion-icon">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-width="2" d="M3 3h7v7H3V3zm11 0h7v7h-7V3zM3 14h7v7H3v-7zm11 0h3v3h-3v-3zM21 14h-3v3h3v-3zm-6 6h3v3h-3v-3z"/>
+                            </svg>
+                        </div>
+                        <div class="accordion-title">الباركود</div>
+                        <svg class="accordion-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-content-inner">
+                            <p class="accordion-description">
+                                فحص الباركود الخاص بالمدرسة أو متابعة التحقق.
+                            </p>
+                            <a href="qr_verify.html" class="accordion-link">
+                                <span>فتح صفحة الباركود</span>
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15 19l-7-7 7-7"></path>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar-footer">
+            <button class="logout-btn" onclick="logout()">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                </svg>
+                تسجيل الخروج
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content" id="mainContent">
+        <!-- Landing Page Content -->
+        <div class="container">
+            <!-- Header Section -->
+            <div class="header-section">
+                <div class="logo">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                    </svg>
+                </div>
+                <h1>دليل المدارس الشامل</h1>
+                <p class="subtitle">نربط الأهالي بأفضل المدارس المناسبة لأولادهم</p>
+            </div>
+
+            <!-- Problem Section -->
+            <div class="content-section">
+                <h2>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                    المشكلة التي نحلها
+                </h2>
+                
+                <div class="problem-section">
+                    <p>
+                        <strong>بسبب كثرة المدارس المتاحة وعدم معرفة المدارس الأنسب،</strong> يواجه الأهالي صعوبة كبيرة في اختيار المدرسة المناسبة لأولادهم. الكثير من الأهالي لا يعرفون:
+                    </p>
+                    <p>
+                        • ما هي <span class="highlight">أفضل المدارس</span> المتاحة في منطقتهم؟<br>
+                        • أي المدارس <span class="highlight">تناسب ميزانيتهم</span> وإمكانياتهم المادية؟<br>
+                        • ما هي <span class="highlight">تفاصيل ومواصفات</span> كل مدرسة؟<br>
+                        • كيف يمكنهم <span class="highlight">المقارنة بين المدارس</span> المختلفة؟
+                    </p>
+                </div>
+
+                <div class="solution-section">
+                    <h2>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        الحل الذي نقدمه
+                    </h2>
+                    <p>
+                        <strong>قررنا إنشاء هذا البرنامج</strong> ليكون <span class="highlight">الدليل الشامل</span> الذي يساعد الأهالي على العثور على أفضل المدارس المتاحة لأولادهم، ويساعد المدارس على نشر معلوماتها والوصول لأكبر عدد من الأهالي.
+                    </p>
+                    <p>
+                        برنامجنا يوفر <span class="highlight">منصة واحدة متكاملة</span> تجمع كل المعلومات التي تحتاجها عن المدارس، مع إمكانية البحث والمقارنة والتواصل المباشر.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Features Section -->
+            <div class="content-section">
+                <h2>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                    ماذا نقدم؟
+                </h2>
+
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                        </div>
+                        <div class="feature-title">للأهالي</div>
+                        <p class="feature-desc">
+                            إمكانية البحث والعثور على أفضل المدارس المناسبة لأولادهم حسب الموقع، السعر، والمستوى التعليمي
+                        </p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                            </svg>
+                        </div>
+                        <div class="feature-title">للمدارس</div>
+                        <p class="feature-desc">
+                            منصة لنشر معلومات المدرسة وعرض مميزاتها والوصول لأكبر عدد من الأهالي المهتمين
+                        </p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                            </svg>
+                        </div>
+                        <div class="feature-title">تفاصيل شاملة</div>
+                        <p class="feature-desc">
+                            معلومات كاملة عن كل مدرسة: الأسعار، المناهج، الأنشطة، الموقع، وتقييمات الأهالي
+                        </p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <div class="feature-title">مقارنة الأسعار</div>
+                        <p class="feature-desc">
+                            إمكانية مقارنة أسعار المدارس المختلفة واختيار ما يناسب ميزانيتك بكل سهولة
+                        </p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                        </div>
+                        <div class="feature-title">بحث بالموقع</div>
+                        <p class="feature-desc">
+                            ابحث عن المدارس القريبة من منزلك أو في المنطقة التي تفضلها بسهولة
+                        </p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                            </svg>
+                        </div>
+                        <div class="feature-title">تواصل مباشر</div>
+                        <p class="feature-desc">
+                            إمكانية التواصل المباشر مع المدارس والاستفسار عن أي معلومات إضافية
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CTA Section -->
+            <div class="cta-section">
+                <h2>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                    ابدأ رحلتك الآن
+                </h2>
+                <p>
+                    سواء كنت ولي أمر يبحث عن أفضل مدرسة لأولاده، أو مدرسة تريد الوصول لأهالي أكثر،<br>
+                    نحن هنا لمساعدتك!
+                </p>
+                <a href="view_school.html" class="btn">تصفح المدارس الآن</a>
+            </div>
+        </div>
+          <footer class="footer">
+            <div class="footer-content">
+                <div class="footer-decoration">
+                    <div class="footer-dot"></div>
+                    <div class="footer-dot"></div>
+                    <div class="footer-dot"></div>
+                </div>
+                <p class="copyright">
+                    <span>@2026</span>
+                    <span class="university-name">ypu</span>
+                </p>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:8000/api';
+
+        // Toggle sidebar
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+            const menuToggle = document.getElementById('menuToggle');
+            
+            if (window.innerWidth <= 768) {
+                // Mobile: just toggle active
+                sidebar.classList.toggle('active');
+            } else {
+                // Desktop: collapse/expand
+                sidebar.classList.toggle('collapsed');
+                mainContent.classList.toggle('expanded');
+                
+                // Update button icon
+                const isCollapsed = sidebar.classList.contains('collapsed');
+                if (isCollapsed) {
+                    menuToggle.innerHTML = `
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                        <span>فتح القائمة</span>
+                    `;
+                } else {
+                    menuToggle.innerHTML = `
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                        <span>إغلاق القائمة</span>
+                    `;
+                }
+            }
+        }
+
+        // Toggle accordion
+        function toggleAccordion(id) {
+            const item = document.getElementById(id);
+            const content = item.querySelector('.accordion-content');
+            const isActive = item.classList.contains('active');
+
+            // Close all accordions
+            document.querySelectorAll('.accordion-item').forEach(acc => {
+                acc.classList.remove('active');
+                acc.querySelector('.accordion-content').style.maxHeight = '0';
+            });
+
+            // Open clicked accordion if it wasn't active
+            if (!isActive) {
+                item.classList.add('active');
+                content.style.maxHeight = content.scrollHeight + 'px';
+            }
+        }
+
+        // Check if user is logged in
+        function checkAuth() {
+            const token = localStorage.getItem('authToken');
+            if (!token) {
+                window.location.href = 'login.html';
+                return false;
+            }
+            return true;
+        }
+
+        // Logout function
+        async function logout() {
+            const token = localStorage.getItem('authToken');
+            
+            try {
+                await fetch(`${API_URL}/logout`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Accept': 'application/json',
+                    }
+                });
+            } catch (error) {
+                console.error('Logout error:', error);
+            }
+            
+            // Clear localStorage
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('currentUser');
+            
+            // Redirect to login
+          window.location.href = 'D:/frontend/madrsty/login/login.html';
+        }
+
+        // Load data when page loads
+        window.addEventListener('DOMContentLoaded', function() {
+            checkAuth();
+        });
+
+        // Close sidebar when clicking outside (mobile)
+        document.addEventListener('click', function(event) {
+            const sidebar = document.getElementById('sidebar');
+            const menuToggle = document.getElementById('menuToggle');
+            
+            if (window.innerWidth <= 768 && 
+                !sidebar.contains(event.target) && 
+                !menuToggle.contains(event.target) && 
+                sidebar.classList.contains('active')) {
+                sidebar.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>

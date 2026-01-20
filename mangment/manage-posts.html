@@ -1,0 +1,1095 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>madrasty</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            right: 0;
+            top: 0;
+            width: 320px;
+            height: 100vh;
+            background: #ffffff;
+            box-shadow: -8px 0 40px rgba(0, 0, 0, 0.15);
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar.closed {
+            transform: translateX(320px);
+        }
+
+        .sidebar-header {
+            padding: 40px 30px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .sidebar-header h2 {
+            font-size: 26px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 700;
+        }
+
+        .sidebar-header p {
+            font-size: 14px;
+            opacity: 0.95;
+            font-weight: 400;
+        }
+
+        .user-profile {
+            padding: 30px 25px;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            background: #fafbfc;
+        }
+
+        .user-avatar {
+            width: 65px;
+            height: 65px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 26px;
+            flex-shrink: 0;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+            border-radius: 50%;
+        }
+
+        .user-details {
+            flex: 1;
+        }
+
+        .user-name {
+            font-weight: 700;
+            color: #1f2937;
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        .user-role {
+            color: #6b7280;
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .user-role i {
+            color: #667eea;
+            font-size: 12px;
+        }
+
+        .sidebar-menu {
+            padding: 25px 0;
+            flex: 1;
+        }
+
+        .menu-item {
+            padding: 18px 30px;
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            color: #4b5563;
+            text-decoration: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-right: 4px solid transparent;
+            cursor: pointer;
+            position: relative;
+            font-weight: 500;
+        }
+
+        .menu-item::before {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0;
+            height: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 4px 0 0 4px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .menu-item:hover {
+            background: linear-gradient(to left, #f9fafb 0%, #ffffff 100%);
+            color: #667eea;
+            padding-right: 35px;
+        }
+
+        .menu-item:hover::before {
+            width: 5px;
+            height: 60%;
+        }
+
+        .menu-item.active {
+            background: linear-gradient(to left, #ede9fe 0%, #f5f3ff 100%);
+            color: #667eea;
+            border-right-color: #667eea;
+            font-weight: 700;
+            padding-right: 26px;
+        }
+
+        .menu-item.active::before {
+            width: 5px;
+            height: 80%;
+        }
+
+        .menu-item i {
+            width: 26px;
+            font-size: 20px;
+            text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .menu-item:hover i {
+            transform: scale(1.15);
+        }
+
+        .menu-item span {
+            font-size: 16px;
+        }
+
+        .logout-section {
+            padding: 25px;
+            border-top: 1px solid #e5e7eb;
+            background: #fafbfc;
+        }
+
+        .logout-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 16px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+        }
+
+        .logout-btn:hover {
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(239, 68, 68, 0.4);
+        }
+
+        .logout-btn i {
+            font-size: 18px;
+        }
+
+        .sidebar-toggle {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: white;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            z-index: 1001;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+        }
+
+        .sidebar-toggle:hover {
+            transform: scale(1.08);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+        }
+
+        .sidebar-toggle:active {
+            transform: scale(0.95);
+        }
+
+        .toggle-icon {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .toggle-line {
+            width: 28px;
+            height: 3px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 3px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .sidebar-toggle.active .toggle-line:nth-child(1) {
+            transform: rotate(45deg) translate(8px, 8px);
+        }
+
+        .sidebar-toggle.active .toggle-line:nth-child(2) {
+            opacity: 0;
+            transform: translateX(20px);
+        }
+
+        .sidebar-toggle.active .toggle-line:nth-child(3) {
+            transform: rotate(-45deg) translate(8px, -8px);
+        }
+
+        .main-content {
+            margin-right: 320px;
+            padding: 40px;
+            transition: margin-right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            min-height: 100vh;
+        }
+
+        .main-content.expanded {
+            margin-right: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .page-header {
+            background: white;
+            border-radius: 25px;
+            padding: 40px;
+            margin-bottom: 35px;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.12);
+            text-align: center;
+        }
+
+        .page-title {
+            color: #1f2937;
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .page-title i {
+            color: #667eea;
+        }
+
+        .posts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 30px;
+        }
+
+        .post-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+        }
+
+        .post-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .post-image {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .post-content {
+            padding: 25px;
+        }
+
+        .post-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 15px;
+        }
+
+        .post-text {
+            color: #6b7280;
+            line-height: 1.7;
+            margin-bottom: 20px;
+        }
+
+        .post-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-edit {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-edit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-delete {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+        }
+
+        .btn-delete:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+        }
+
+        .message {
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            text-align: center;
+            font-weight: 600;
+            display: none;
+            animation: slideDown 0.4s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.success {
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            color: #065f46;
+            border: 2px solid #6ee7b7;
+        }
+
+        .message.error {
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+            color: #991b1b;
+            border: 2px solid #fca5a5;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 25px;
+            padding: 40px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-icon {
+            font-size: 70px;
+            color: #ef4444;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 15px;
+        }
+
+        .modal-text {
+            color: #6b7280;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 15px;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 25px;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.12);
+        }
+
+        .spinner {
+            border: 4px solid #e5e7eb;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            background: white;
+            border-radius: 25px;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.12);
+        }
+
+        .empty-icon {
+            font-size: 80px;
+            color: #d1d5db;
+            margin-bottom: 20px;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 999;
+            display: none;
+            transition: opacity 0.4s;
+        }
+
+        .overlay.active {
+            display: block;
+        }
+
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 100%;
+                max-width: 340px;
+            }
+
+            .sidebar.closed {
+                transform: translateX(100%);
+            }
+
+            .main-content {
+                margin-right: 0;
+            }
+
+            .posts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 25px 20px;
+            }
+
+            .page-header {
+                padding: 30px 20px;
+            }
+
+            .modal-content {
+                padding: 30px 20px;
+            }
+
+            .sidebar-toggle {
+                width: 50px;
+                height: 50px;
+                top: 20px;
+                right: 20px;
+            }
+
+            .toggle-line {
+                width: 24px;
+            }
+        }
+        
+        .footer {
+            position: relative;
+            width: 100%;
+            padding: 20px;
+            background: linear-gradient(to top, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.85));
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+            text-align: center;
+            box-shadow: 0 -5px 25px rgba(0, 0, 0, 0.03);
+            margin-top: 60px;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .copyright {
+            color: #4b5563;
+            font-size: 15px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        .university-name {
+            color: #1f2937;
+            font-weight: 700;
+            font-size: 18px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            padding: 0 4px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .university-name::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 4px;
+            right: 4px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #667eea, #764ba2, transparent);
+            border-radius: 1px;
+            opacity: 0.7;
+        }
+
+        .footer-decoration {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 5px;
+        }
+
+        .footer-dot {
+            width: 4px;
+            height: 4px;
+            background: #9ca3af;
+            border-radius: 50%;
+            opacity: 0.6;
+        }
+
+        @media (max-width: 576px) {
+            .footer {
+                padding: 12px;
+            }
+
+            .copyright {
+                font-size: 13px;
+            }
+
+            .university-name {
+                font-size: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Overlay -->
+    <div class="overlay" id="overlay"></div>
+
+    <!-- Sidebar Toggle -->
+    <button class="sidebar-toggle" id="toggleBtn" onclick="toggleSidebar()">
+        <div class="toggle-icon">
+            <div class="toggle-line"></div>
+            <div class="toggle-line"></div>
+            <div class="toggle-line"></div>
+        </div>
+    </button>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h2><i class="fas fa-graduation-cap"></i></h2>
+        </div>
+
+        <div class="user-profile">
+            <div class="user-avatar" id="userAvatar">M</div>
+            <div class="user-details">
+                <div class="user-name" id="userName">جاري التحميل...</div>
+                <div class="user-role">
+                    <i class="fas fa-crown"></i>
+                    مدير
+                </div>
+            </div>
+        </div>
+
+        <nav class="sidebar-menu">
+            <a href="manager.html" class="menu-item">
+                <i class="fas fa-home"></i>
+                <span>الرئيسية</span>
+            </a>
+            <a href="profile.html" class="menu-item">
+                <i class="fas fa-user-circle"></i>
+                <span>الملف الشخصي</span>
+            </a>
+            <a href="school-info.html" class="menu-item">
+                <i class="fas fa-school"></i>
+                <span>معلومات المدرسة</span>
+            </a>
+            <a href="school-ratings.html" class="menu-item">
+                <i class="fas fa-star"></i>
+                <span>التقييمات</span>
+            </a>
+             <a href="ratings.html" class="menu-item ">
+                <i class="fas fa-chart-line"></i>
+                <span>مقارنة المدارس</span>
+            </a>
+            <a href="create_post.html" class="menu-item">
+                <i class="fas fa-pen-to-square"></i>
+                <span>نشر منشور</span>
+            </a>
+            <a href="manage-posts.html" class="menu-item active">
+                <i class="fas fa-list-check"></i>
+                <span>إدارة المنشورات</span>
+            </a>
+            <a href="view-posts.html" class="menu-item">
+                <i class="fas fa-newspaper"></i>
+                <span>مشاهدة المنشورات</span>
+            </a>
+        </nav>
+
+        <div class="logout-section">
+            <button class="logout-btn" onclick="logout()">
+                <i class="fas fa-right-from-bracket"></i>
+                <span>تسجيل خروج</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content" id="mainContent">
+        <div class="container">
+            <div class="page-header">
+                <h1 class="page-title">
+                    <i class="fas fa-cog"></i>
+                    إدارة المنشورات
+                </h1>
+            </div>
+
+            <div id="message" class="message"></div>
+
+            <div id="loading" class="loading">
+                <div class="spinner"></div>
+                <p>جاري تحميل المنشورات...</p>
+            </div>
+
+            <div id="postsContainer" class="posts-grid" style="display: none;"></div>
+            
+            <div id="emptyState" class="empty-state" style="display: none;">
+                <i class="fas fa-inbox empty-icon"></i>
+                <p style="font-size: 20px; color: #6b7280; font-weight: 600;">لا توجد منشورات بعد</p>
+            </div>
+        </div>
+    </div>
+    
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-decoration">
+                <div class="footer-dot"></div>
+                <div class="footer-dot"></div>
+                <div class="footer-dot"></div>
+            </div>
+            <p class="copyright">
+                <span>@2026</span>
+                <span class="university-name">ypu</span>
+            </p>
+        </div>
+    </footer>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="modal">
+        <div class="modal-content">
+            <i class="fas fa-exclamation-triangle modal-icon"></i>
+            <h2 class="modal-title">تأكيد الحذف</h2>
+            <p class="modal-text">هل أنت متأكد من حذف هذا المنشور؟ لا يمكن التراجع عن هذا الإجراء.</p>
+            <div class="modal-actions">
+                <button class="btn btn-delete" onclick="confirmDelete()">
+                    <i class="fas fa-trash"></i>
+                    نعم، احذف
+                </button>
+                <button class="btn btn-edit" onclick="closeModal()">
+                    <i class="fas fa-times"></i>
+                    إلغاء
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://127.0.0.1:8000/api';
+        const BASE_URL = 'http://127.0.0.1:8000';
+        let postToDelete = null;
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+            const mainContent = document.getElementById('mainContent');
+            const toggleBtn = document.getElementById('toggleBtn');
+            
+            const isOpening = sidebar.classList.contains('closed');
+            
+            sidebar.classList.toggle('closed');
+            mainContent.classList.toggle('expanded');
+            toggleBtn.classList.toggle('active');
+            
+            if (isOpening) {
+                overlay.classList.remove('active');
+            } else {
+                overlay.classList.remove('active');
+            }
+        }
+
+        document.getElementById('overlay').addEventListener('click', toggleSidebar);
+
+        // Check authentication
+        function checkAuth() {
+            const token = localStorage.getItem('authToken');
+            const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
+
+            if (!token || !user || (user.role !== 'manager' && user.role !== 'Manager')) {
+                window.location.href = 'index.html';
+                return null;
+            }
+
+            return { token, user };
+        }
+
+        // Load user info with profile image
+        async function loadUserInfo() {
+            const auth = checkAuth();
+            if (!auth) return;
+
+            const { token, user } = auth;
+            const userNameElement = document.getElementById('userName');
+            const userAvatarElement = document.getElementById('userAvatar');
+            
+            userNameElement.textContent = user.name || 'مدير';
+            
+            // Set initial avatar with letter
+            userAvatarElement.textContent = (user.name || 'M')[0].toUpperCase();
+            userAvatarElement.style.display = 'flex';
+            
+            // Try to load user profile image from API
+            try {
+                const response = await fetch(`${API_URL}/me`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const profileData = await response.json();
+                    
+                    // Check if profile has image
+                    if (profileData.image) {
+                        const imageUrl = `${BASE_URL}/storage/${profileData.image}`;
+                        
+                        // Create image element
+                        const img = document.createElement('img');
+                        img.src = imageUrl;
+                        img.alt = 'صورة المستخدم';
+                        img.style.width = '100%';
+                        img.style.height = '100%';
+                        img.style.objectFit = 'cover';
+                        img.style.borderRadius = '50%';
+                        
+                        img.onerror = function() {
+                            // If image fails to load, show the letter avatar
+                            this.style.display = 'none';
+                            userAvatarElement.textContent = (user.name || 'M')[0].toUpperCase();
+                            userAvatarElement.style.display = 'flex';
+                        };
+                        
+                        // Clear avatar content and add image
+                        userAvatarElement.innerHTML = '';
+                        userAvatarElement.appendChild(img);
+                        userAvatarElement.style.display = 'block';
+                    }
+                }
+            } catch (error) {
+                console.log('لم يتم العثور على صورة للمستخدم، سيتم استخدام الحرف البديل');
+                // Keep the letter avatar if API call fails
+                userAvatarElement.innerHTML = '';
+                userAvatarElement.textContent = (user.name || 'M')[0].toUpperCase();
+                userAvatarElement.style.display = 'flex';
+            }
+        }
+
+        async function loadPosts() {
+            const auth = checkAuth();
+            if (!auth) return;
+
+            const { user, token } = auth;
+
+            if (!user.school_id || !token) {
+                showMessage('يرجى تسجيل الدخول أولاً', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/schools/${user.school_id}/posts`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                const posts = await response.json();
+                
+                document.getElementById('loading').style.display = 'none';
+
+                // Filter posts by current user (manager can only delete their own posts)
+                const myPosts = posts.filter(post => post.user_id === user.id);
+
+                if (myPosts.length === 0) {
+                    document.getElementById('emptyState').style.display = 'block';
+                } else {
+                    displayPosts(myPosts);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showMessage('حدث خطأ في تحميل المنشورات', 'error');
+                document.getElementById('loading').style.display = 'none';
+            }
+        }
+
+        function displayPosts(posts) {
+            const container = document.getElementById('postsContainer');
+            container.style.display = 'grid';
+            
+            container.innerHTML = posts.map(post => `
+                <div class="post-card" id="post-${post.id}">
+                    ${post.image ? `<img src="${BASE_URL}/storage/${post.image}" alt="${post.title}" class="post-image">` : '<div class="post-image"></div>'}
+                    <div class="post-content">
+                        <h2 class="post-title">${post.title}</h2>
+                        <p class="post-text">${post.content.substring(0, 150)}${post.content.length > 150 ? '...' : ''}</p>
+                        <div class="post-actions">
+                            <button class="btn btn-edit" onclick="editPost(${post.id})">
+                                <i class="fas fa-edit"></i>
+                                تعديل
+                            </button>
+                            <button class="btn btn-delete" onclick="deletePost(${post.id})">
+                                <i class="fas fa-trash"></i>
+                                حذف
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function editPost(postId) {
+            window.location.href = `edit-post.html?id=${postId}`;
+        }
+
+        function deletePost(postId) {
+            postToDelete = postId;
+            document.getElementById('deleteModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('deleteModal').classList.remove('active');
+            postToDelete = null;
+        }
+
+        async function confirmDelete() {
+            if (!postToDelete) return;
+
+            const auth = checkAuth();
+            if (!auth) return;
+
+            const { token } = auth;
+
+            try {
+                const response = await fetch(`${API_URL}/posts/${postToDelete}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showMessage('تم حذف المنشور بنجاح ✓', 'success');
+                    closeModal();
+                    
+                    // Remove post card from UI
+                    const postCard = document.getElementById(`post-${postToDelete}`);
+                    if (postCard) {
+                        postCard.style.animation = 'fadeOut 0.3s ease';
+                        setTimeout(() => {
+                            postCard.remove();
+                            
+                            // Check if no posts left
+                            const container = document.getElementById('postsContainer');
+                            if (container.children.length === 0) {
+                                container.style.display = 'none';
+                                document.getElementById('emptyState').style.display = 'block';
+                            }
+                        }, 300);
+                    }
+                } else {
+                    showMessage(data.message || 'حدث خطأ أثناء الحذف', 'error');
+                    closeModal();
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showMessage('حدث خطأ في الاتصال بالخادم', 'error');
+                closeModal();
+            }
+        }
+
+        function showMessage(text, type) {
+            const messageEl = document.getElementById('message');
+            messageEl.textContent = text;
+            messageEl.className = `message ${type}`;
+            messageEl.style.display = 'block';
+            
+            setTimeout(() => {
+                messageEl.style.display = 'none';
+            }, 5000);
+        }
+
+        // Logout
+        function logout() {
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('currentUser');
+            window.location.href = 'index.html';
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('deleteModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadUserInfo();
+            loadPosts();
+        });
+    </script>
+
+    <style>
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+                transform: scale(1);
+            }
+            to {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+        }
+    </style>
+</body>
+</html>

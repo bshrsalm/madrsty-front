@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="ar" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
+    <title>Madrasty</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        :root { --primary-color: #667eea; --secondary-color: #764ba2; --panel-color: #FFF; --text-color: #000; --black-light-color: #707070; --border-color: #e6e5e5; --toggle-color: #DDD; --box1-color: linear-gradient(135deg, #667eea 0%, #764ba2 100%); --title-icon-color: #fff; --success-color: #10b981; --danger-color: #ef4444; --warning-color: #f59e0b; --info-color: #3b82f6; --tran-05: all 0.5s ease; --tran-03: all 0.3s ease; }
+        body { min-height: 100vh; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        body.dark { --primary-color: #667eea; --panel-color: #242526; --text-color: #CCC; --black-light-color: #CCC; --border-color: #4D4C4C; --toggle-color: #FFF; --title-icon-color: #CCC; background: linear-gradient(135deg, #3A3B3C 0%, #242526 100%); }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: var(--primary-color); border-radius: 12px; }
+        nav { position: fixed; top: 0; left: 0; height: 100%; width: 250px; padding: 10px 14px; background-color: var(--panel-color); border-right: 1px solid var(--border-color); transition: var(--tran-05); z-index: 100; }
+        nav.close { width: 73px; }
+        nav .logo-name { display: flex; align-items: center; }
+        nav .logo-image { display: flex; justify-content: center; min-width: 45px; }
+        nav .logo-image img { width: 40px; object-fit: cover; border-radius: 50%; }
+        nav .logo-name .logo_name { font-size: 22px; font-weight: 600; color: var(--text-color); margin-left: 14px; transition: var(--tran-05); }
+        nav.close .logo_name { opacity: 0; pointer-events: none; }
+        nav .menu-items { margin-top: 40px; height: calc(100% - 90px); display: flex; flex-direction: column; justify-content: space-between; }
+        .menu-items li { list-style: none; }
+        .menu-items li a { display: flex; align-items: center; height: 50px; text-decoration: none; position: relative; }
+        .nav-links li a:hover:before { content: ""; position: absolute; left: -7px; height: 5px; width: 5px; border-radius: 50%; background-color: var(--primary-color); }
+        .menu-items li a i { font-size: 24px; min-width: 45px; height: 100%; display: flex; align-items: center; justify-content: center; color: var(--black-light-color); }
+        .menu-items li a .link-name { font-size: 18px; font-weight: 400; color: var(--black-light-color); transition: var(--tran-05); }
+        nav.close li a .link-name { opacity: 0; pointer-events: none; }
+        .nav-links li a:hover i, .nav-links li a:hover .link-name { color: var(--primary-color); }
+        .menu-items .logout-mode { padding-top: 10px; border-top: 1px solid var(--border-color); }
+        .menu-items .mode { display: flex; align-items: center; white-space: nowrap; }
+        .menu-items .mode-toggle { position: absolute; right: 14px; height: 50px; min-width: 45px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        .mode-toggle .switch { position: relative; display: inline-block; height: 22px; width: 40px; border-radius: 25px; background-color: var(--toggle-color); }
+        .switch:before { content: ""; position: absolute; left: 5px; top: 50%; transform: translateY(-50%); height: 15px; width: 15px; background-color: var(--panel-color); border-radius: 50%; transition: var(--tran-03); }
+        body.dark .switch:before { left: 20px; }
+        .dashboard { position: relative; left: 250px; background-color: var(--panel-color); min-height: 100vh; width: calc(100% - 250px); padding: 10px 14px; transition: var(--tran-05); }
+        nav.close ~ .dashboard { left: 73px; width: calc(100% - 73px); }
+        .dashboard .top { position: fixed; top: 0; left: 250px; display: flex; width: calc(100% - 250px); justify-content: space-between; align-items: center; padding: 10px 14px; background-color: var(--panel-color); transition: var(--tran-05); z-index: 10; border-bottom: 1px solid var(--border-color); }
+        nav.close ~ .dashboard .top { left: 73px; width: calc(100% - 73px); }
+        .dashboard .top .sidebar-toggle { font-size: 26px; color: var(--text-color); cursor: pointer; }
+        .dashboard .top .search-box { position: relative; height: 45px; max-width: 600px; width: 100%; margin: 0 30px; }
+        .top .search-box input { position: absolute; border: 1px solid var(--border-color); background-color: var(--panel-color); padding: 0 25px 0 50px; border-radius: 5px; height: 100%; width: 100%; color: var(--text-color); font-size: 15px; font-weight: 400; outline: none; }
+        .top .search-box i { position: absolute; left: 15px; font-size: 22px; z-index: 10; top: 50%; transform: translateY(-50%); color: var(--black-light-color); }
+        .dashboard .dash-content { padding-top: 70px; }
+        .dash-content .title { display: flex; align-items: center; margin: 30px 0 20px 0; }
+        .dash-content .title i { position: relative; height: 35px; width: 35px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 6px; color: var(--title-icon-color); display: flex; align-items: center; justify-content: center; font-size: 24px; }
+        .dash-content .title .text { font-size: 24px; font-weight: 500; color: var(--text-color); margin-left: 10px; }
+        .dash-content .boxes { display: flex; align-items: center; justify-content: flex-start; flex-wrap: wrap; gap: 20px; margin-bottom: 30px; }
+        .dash-content .boxes .box { display: flex; flex-direction: column; align-items: center; border-radius: 12px; width: 200px; padding: 20px 30px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); transition: var(--tran-05); box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3); }
+        .boxes .box:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4); }
+        .boxes .box i { font-size: 35px; color: white; }
+        .boxes .box .text { white-space: nowrap; font-size: 16px; font-weight: 500; color: white; margin-top: 8px; }
+        .boxes .box .number { font-size: 40px; font-weight: 600; color: white; margin-top: 8px; }
+        .school-selector { background: var(--panel-color); border-radius: 12px; padding: 20px; margin-bottom: 30px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05); }
+        .school-selector select { width: 100%; padding: 12px; border: 2px solid var(--border-color); border-radius: 8px; background: var(--panel-color); color: var(--text-color); font-size: 16px; cursor: pointer; transition: all 0.3s; }
+        .school-selector select:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1); }
+        .ratings-table { background: var(--panel-color); border-radius: 12px; padding: 20px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05); overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid var(--border-color); color: var(--text-color); font-size: 14px; }
+        th { font-weight: 600; color: var(--primary-color); text-transform: uppercase; }
+        .rating-badge { padding: 4px 8px; border-radius: 4px; font-weight: 600; font-size: 12px; display: inline-block; }
+        .rating-excellent { background: #d1fae5; color: #065f46; }
+        .rating-good { background: #dbeafe; color: #1e40af; }
+        .rating-average { background: #fef3c7; color: #92400e; }
+        .rating-poor { background: #fee2e2; color: #991b1b; }
+        .btn { padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; font-weight: 500; transition: all 0.3s; font-size: 12px; display: inline-flex; align-items: center; gap: 4px; margin-right: 5px; }
+        .btn-view { background: var(--info-color); color: white; }
+        .btn-view:hover { background: #2563eb; transform: translateY(-2px); }
+        .btn-delete { background: var(--danger-color); color: white; }
+        .btn-delete:hover { background: #dc2626; transform: translateY(-2px); }
+        .message { padding: 12px 16px; border-radius: 8px; margin-bottom: 20px; text-align: center; font-weight: 500; display: none; }
+        .message.success { background: #d1fae5; color: #065f46; }
+        .message.error { background: #fee2e2; color: #991b1b; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 20px; }
+        .stat-card { background: var(--panel-color); border: 2px solid var(--border-color); border-radius: 8px; padding: 12px; text-align: center; }
+        .stat-label { color: var(--black-light-color); font-size: 12px; margin-bottom: 6px; }
+        .stat-value { color: var(--text-color); font-size: 22px; font-weight: 700; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1000; animation: fadeIn 0.3s; }
+        .modal.active { display: flex; align-items: center; justify-content: center; }
+        .modal-content { background: var(--panel-color); border-radius: 12px; padding: 20px; max-width: 800px; width: 90%; max-height: 90vh; overflow-y: auto; animation: slideUp 0.3s; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3); }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid var(--border-color); }
+        .modal-header h3 { color: var(--text-color); font-size: 20px; }
+        .modal-close { font-size: 24px; color: var(--black-light-color); cursor: pointer; transition: all 0.3s; }
+        .modal-close:hover { color: var(--danger-color); transform: rotate(90deg); }
+        .modal-user-info { background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1)); padding: 15px; border-radius: 8px; margin-bottom: 15px; }
+        .user-info { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+        .user-avatar { width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 18px; }
+        .user-details { display: flex; flex-direction: column; }
+        .user-name { font-weight: 600; color: var(--text-color); font-size: 16px; }
+        .user-email { font-size: 13px; color: var(--black-light-color); }
+        .modal-school { padding: 10px; background: var(--panel-color); border-radius: 6px; display: flex; align-items: center; gap: 8px; }
+        .rating-detail { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; }
+        .rating-item { background: rgba(102, 126, 234, 0.05); padding: 12px; border-radius: 6px; text-align: center; }
+        .rating-item-label { font-size: 11px; color: var(--black-light-color); margin-bottom: 6px; text-transform: uppercase; }
+        .rating-item-value { font-size: 20px; font-weight: 700; color: var(--primary-color); }
+        .rating-item.average { grid-column: span 3; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .rating-item.average .rating-item-label { color: white; }
+        .rating-item.average .rating-item-value { color: white; font-size: 28px; }
+        .modal-footer { margin-top: 15px; padding-top: 10px; border-top: 1px solid var(--border-color); color: var(--black-light-color); font-size: 13px; display: flex; align-items: center; gap: 8px; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        @media (max-width: 1200px) {
+            .rating-detail { grid-template-columns: repeat(2, 1fr); }
+            .rating-item.average { grid-column: span 2; }
+        }
+        @media (max-width: 768px) {
+            .rating-detail { grid-template-columns: 1fr; }
+            .rating-item.average { grid-column: span 1; }
+        }
+        @media (max-width: 1000px) { nav { width: 73px; } nav.close { width: 250px; } nav ~ .dashboard { left: 73px; width: calc(100% - 73px); } nav.close ~ .dashboard { left: 250px; width: calc(100% - 250px); } }
+        @media (max-width: 768px) { .boxes .box { width: 100%; } .stats-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="logo-name">
+            <div class="logo-image"><img src="../image/gg.jpg" alt="Logo"></div>
+            <span class="logo_name">Madrasty</span>
+        </div>
+        <div class="menu-items">
+            <ul class="nav-links">
+                <li><a href="dashboard.html"><i class="uil uil-estate"></i><span class="link-name">Users Management</span></a></li>
+                <li><a href="schools.html"><i class="uil uil-graduation-cap"></i><span class="link-name">Schools</span></a></li>
+                <li><a href="dashboard_posts.html"><i class="uil uil-files-landscapes"></i><span class="link-name">Posts</span></a></li>
+                <li><a href="ratings.html"><i class="uil uil-star"></i><span class="link-name">Ratings</span></a></li>
+               
+                <li><a href="dashboard_profile.html"><i class="uil uil-user-circle"></i><span class="link-name">Profiles</span></a></li>
+            </ul>
+            <ul class="logout-mode">
+                <li><a href="#" id="logoutBtn"><i class="uil uil-signout"></i><span class="link-name">Logout</span></a></li>
+                <li class="mode"><a href="#"><i class="uil uil-moon"></i><span class="link-name">Dark Mode</span></a><div class="mode-toggle"><span class="switch"></span></div></li>
+            </ul>
+        </div>
+    </nav>
+
+    <section class="dashboard">
+        <div class="top">
+            <i class="uil uil-bars sidebar-toggle"></i>
+            <div class="search-box"><i class="uil uil-search"></i><input type="text" id="searchInput" placeholder="Search by user name or email..."></div>
+        </div>
+
+        <div class="dash-content">
+            <div class="overview">
+                <div class="title"><i class="uil uil-star"></i><span class="text">School Ratings Dashboard</span></div>
+                <div class="boxes">
+                    <div class="box box1"><i class="uil uil-graduation-cap"></i><span class="text">Total Schools</span><span class="number" id="schoolCount">0</span></div>
+                    <div class="box box1"><i class="uil uil-star"></i><span class="text">Total Ratings</span><span class="number" id="ratingCount">0</span></div>
+                    <div class="box box1"><i class="uil uil-chart-line"></i><span class="text">Avg Rating</span><span class="number" id="avgRating">0</span></div>
+                </div>
+            </div>
+
+            <div class="activity">
+                <div class="title"><i class="uil uil-list-ul"></i><span class="text">Select School</span></div>
+                <div class="school-selector"><select id="schoolSelect"><option value="">-- Select a School --</option></select></div>
+
+                <div id="statisticsSection" style="display: none;">
+                    <div class="title"><i class="uil uil-chart"></i><span class="text">Rating Statistics</span></div>
+                    <div class="stats-grid" id="statsGrid"></div>
+                </div>
+
+                <div class="title"><i class="uil uil-star"></i><span class="text">Ratings Management</span></div>
+                <div class="ratings-table">
+                    <div id="message" class="message"></div>
+                    <table id="ratingsTable">
+                        <thead>
+                            <tr>
+                                <th>User</th>
+                                <th>Email</th>
+                                <th>Education Level</th>
+                                <th>Support</th>
+                                <th>Teachers</th>
+                                <th>Follow Up</th>
+                                <th>Trips</th>
+                                <th>Parent Comm.</th>
+                                <th>Exams</th>
+                                <th>Enrichment</th>
+                                <th>Management</th>
+                                <th>Environment</th>
+                                <th>Rated At</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody"><tr><td colspan="14" style="text-align: center;">Select a school to view ratings</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div id="ratingModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header"><h3>Rating Details</h3><i class="uil uil-times modal-close"></i></div>
+            <div id="modalBody"></div>
+        </div>
+    </div>
+
+    <script>
+        const body = document.querySelector("body"), modeToggle = body.querySelector(".mode-toggle"), sidebar = body.querySelector("nav"), sidebarToggle = body.querySelector(".sidebar-toggle");
+        let getMode = localStorage.getItem("mode"); if (getMode && getMode === "dark") body.classList.add("dark");
+        let getStatus = localStorage.getItem("status"); if (getStatus && getStatus === "close") sidebar.classList.add("close");
+        modeToggle.addEventListener("click", () => { body.classList.toggle("dark"); localStorage.setItem("mode", body.classList.contains("dark") ? "dark" : "light"); });
+        sidebarToggle.addEventListener("click", () => { sidebar.classList.toggle("close"); localStorage.setItem("status", sidebar.classList.contains("close") ? "close" : "open"); });
+
+        const API_URL = 'http://127.0.0.1:8000/api', TOKEN = localStorage.getItem('authToken');
+        let allRatings = [];
+        let allSchools = [];
+        let currentSchoolId = null;
+
+        function showMessage(msg, type) {
+            const el = document.getElementById('message');
+            el.textContent = msg; el.className = `message ${type}`; el.style.display = 'block';
+            setTimeout(() => el.style.display = 'none', 3000);
+        }
+
+        function getRatingClass(val) {
+            return val >= 80 ? 'rating-excellent' : val >= 60 ? 'rating-good' : val >= 40 ? 'rating-average' : 'rating-poor';
+        }
+
+        function getInitials(name) { return name ? name.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase() : 'NA'; }
+
+        async function fetchSchools() {
+            try {
+                const res = await fetch(`${API_URL}/schools`, {
+                    headers: { 'Authorization': `Bearer ${TOKEN}`, 'Content-Type': 'application/json', 'Accept': 'application/json' }
+                });
+                if (!res.ok) throw new Error('Failed to fetch schools');
+                const data = await res.json();
+                displaySchools(data);
+            } catch (err) {
+                console.error('Error:', err);
+                showMessage('Failed to load schools', 'error');
+            }
+        }
+
+        function displaySchools(data) {
+            const schools = Array.isArray(data) ? data : (data.data || data.schools || []);
+            allSchools = schools;
+            document.getElementById('schoolCount').textContent = schools.length;
+            const sel = document.getElementById('schoolSelect');
+            sel.innerHTML = '<option value="">-- Select a School --</option>';
+            schools.forEach(s => {
+                const opt = document.createElement('option');
+                opt.value = s.id; opt.textContent = s.name || `School ${s.id}`;
+                sel.appendChild(opt);
+            });
+        }
+
+        async function fetchRatings(schoolId) {
+            try {
+                const res = await fetch(`${API_URL}/schools/${schoolId}/ratings/all`, {
+                    headers: { 'Authorization': `Bearer ${TOKEN}`, 'Content-Type': 'application/json', 'Accept': 'application/json' }
+                });
+
+                if (!res.ok) {
+                    if (res.status === 403) showMessage('Unauthorized: You can only view ratings for your own schools', 'error');
+                    else if (res.status === 404) showMessage('School not found', 'error');
+                    else throw new Error('Failed to fetch ratings');
+                    document.getElementById('tableBody').innerHTML = '<tr><td colspan="14" style="text-align: center;">No ratings available</td></tr>';
+                    return;
+                }
+
+                const data = await res.json();
+                allRatings = data.detailed_ratings || [];
+                currentSchoolId = schoolId;
+                displayStatistics(data.statistics);
+                displayRatings(allRatings);
+            } catch (err) {
+                console.error('Error:', err);
+                showMessage('Failed to load ratings', 'error');
+                document.getElementById('tableBody').innerHTML = '<tr><td colspan="14" style="text-align: center;">Failed to load ratings</td></tr>';
+            }
+        }
+
+        function displayStatistics(stats) {
+            if (!stats) {
+                document.getElementById('statisticsSection').style.display = 'none';
+                return;
+            }
+
+            document.getElementById('statisticsSection').style.display = 'block';
+            document.getElementById('ratingCount').textContent = stats.total_raters || 0;
+
+            const averages = stats.averages || {};
+            const avgTotal = ((averages.education_level || 0) + 
+                            (averages.support || 0) + 
+                            (averages.teachers || 0) + 
+                            (averages.follow_up || 0) + 
+                            (averages.trips || 0) +
+                            (averages.parent_communication || 0) +
+                            (averages.exams || 0) +
+                            (averages.enrichment_curriculum || 0) +
+                            (averages.school_management || 0) +
+                            (averages.school_environment || 0)) / 10;
+            document.getElementById('avgRating').textContent = avgTotal.toFixed(1);
+
+            document.getElementById('statsGrid').innerHTML = `
+                <div class="stat-card"><div class="stat-label">Education Level</div><div class="stat-value">${averages.education_level || 0}</div></div>
+                <div class="stat-card"><div class="stat-label">Support</div><div class="stat-value">${averages.support || 0}</div></div>
+                <div class="stat-card"><div class="stat-label">Teachers</div><div class="stat-value">${averages.teachers || 0}</div></div>
+                <div class="stat-card"><div class="stat-label">Follow Up</div><div class="stat-value">${averages.follow_up || 0}</div></div>
+                <div class="stat-card"><div class="stat-label">Trips</div><div class="stat-value">${averages.trips || 0}</div></div>
+                <div class="stat-card"><div class="stat-label">Parent Comm.</div><div class="stat-value">${averages.parent_communication || 0}</div></div>
+                <div class="stat-card"><div class="stat-label">Exams</div><div class="stat-value">${averages.exams || 0}</div></div>
+                <div class="stat-card"><div class="stat-label">Enrichment</div><div class="stat-value">${averages.enrichment_curriculum || 0}</div></div>
+                <div class="stat-card"><div class="stat-label">Management</div><div class="stat-value">${averages.school_management || 0}</div></div>
+                <div class="stat-card"><div class="stat-label">Environment</div><div class="stat-value">${averages.school_environment || 0}</div></div>
+            `;
+        }
+
+        function displayRatings(ratings) {
+            const tbody = document.getElementById('tableBody');
+            if (ratings.length > 0) {
+                tbody.innerHTML = ratings.map(r => `
+                    <tr>
+                        <td>${r.user?.name || 'N/A'}</td>
+                        <td>${r.user?.email || 'N/A'}</td>
+                        <td><span class="rating-badge ${getRatingClass(r.education_level)}">${r.education_level}</span></td>
+                        <td><span class="rating-badge ${getRatingClass(r.support)}">${r.support}</span></td>
+                        <td><span class="rating-badge ${getRatingClass(r.teachers)}">${r.teachers}</span></td>
+                        <td><span class="rating-badge ${getRatingClass(r.follow_up)}">${r.follow_up}</span></td>
+                        <td><span class="rating-badge ${getRatingClass(r.trips)}">${r.trips}</span></td>
+                        <td><span class="rating-badge ${getRatingClass(r.parent_communication)}">${r.parent_communication}</span></td>
+                        <td><span class="rating-badge ${getRatingClass(r.exams)}">${r.exams}</span></td>
+                        <td><span class="rating-badge ${getRatingClass(r.enrichment_curriculum)}">${r.enrichment_curriculum}</span></td>
+                        <td><span class="rating-badge ${getRatingClass(r.school_management)}">${r.school_management}</span></td>
+                        <td><span class="rating-badge ${getRatingClass(r.school_environment)}">${r.school_environment}</span></td>
+                        <td>${r.created_at ? new Date(r.created_at).toLocaleDateString() : 'N/A'}</td>
+                        <td>
+                            <button class="btn btn-view" onclick="viewRating(${r.user_id}, ${r.school_id})"><i class="uil uil-eye"></i> View</button>
+                            <button class="btn btn-delete" onclick="deleteRating(${r.user_id}, ${r.school_id})"><i class="uil uil-trash"></i> Delete</button>
+                        </td>
+                    </tr>
+                `).join('');
+            } else {
+                tbody.innerHTML = '<tr><td colspan="14" style="text-align: center;">No ratings found</td></tr>';
+            }
+        }
+
+        function viewRating(userId, schoolId) {
+            const rating = allRatings.find(r => r.user_id === userId && r.school_id === schoolId);
+            if (!rating) return;
+
+            // حساب المتوسط العام
+            const avg = ((rating.education_level + 
+                         rating.support + 
+                         rating.teachers + 
+                         rating.follow_up + 
+                         rating.trips +
+                         rating.parent_communication +
+                         rating.exams +
+                         rating.enrichment_curriculum +
+                         rating.school_management +
+                         rating.school_environment) / 10).toFixed(1);
+            
+            const userName = rating.user?.name || 'N/A';
+            const userEmail = rating.user?.email || 'N/A';
+            
+            // Get school name from multiple sources
+            let schoolName = 'N/A';
+            if (rating.school?.name) {
+                schoolName = rating.school.name;
+            } else {
+                const school = allSchools.find(s => s.id === schoolId);
+                if (school) {
+                    schoolName = school.name || `School ${schoolId}`;
+                } else if (currentSchoolId == schoolId) {
+                    const selectedOption = document.getElementById('schoolSelect').selectedOptions[0];
+                    if (selectedOption) {
+                        schoolName = selectedOption.textContent;
+                    }
+                }
+            }
+            
+            const date = rating.created_at ? new Date(rating.created_at).toLocaleDateString() : 'N/A';
+
+            document.getElementById('modalBody').innerHTML = `
+                <div class="modal-user-info">
+                    <div class="user-info">
+                        <div class="user-avatar">${getInitials(userName)}</div>
+                        <div class="user-details">
+                            <div class="user-name">${userName}</div>
+                            <div class="user-email">${userEmail}</div>
+                        </div>
+                    </div>
+                    <div class="modal-school">
+                        <i class="uil uil-graduation-cap" style="color: var(--primary-color); font-size: 20px;"></i>
+                        <span style="font-weight: 600;">${schoolName}</span>
+                    </div>
+                </div>
+                <div class="rating-detail">
+                    <div class="rating-item">
+                        <div class="rating-item-label">Education Level</div>
+                        <div class="rating-item-value">${rating.education_level}</div>
+                    </div>
+                    <div class="rating-item">
+                        <div class="rating-item-label">Support</div>
+                        <div class="rating-item-value">${rating.support}</div>
+                    </div>
+                    <div class="rating-item">
+                        <div class="rating-item-label">Teachers</div>
+                        <div class="rating-item-value">${rating.teachers}</div>
+                    </div>
+                    <div class="rating-item">
+                        <div class="rating-item-label">Follow Up</div>
+                        <div class="rating-item-value">${rating.follow_up}</div>
+                    </div>
+                    <div class="rating-item">
+                        <div class="rating-item-label">Trips</div>
+                        <div class="rating-item-value">${rating.trips}</div>
+                    </div>
+                    <div class="rating-item">
+                        <div class="rating-item-label">Parent Comm.</div>
+                        <div class="rating-item-value">${rating.parent_communication}</div>
+                    </div>
+                    <div class="rating-item">
+                        <div class="rating-item-label">Exams</div>
+                        <div class="rating-item-value">${rating.exams}</div>
+                    </div>
+                    <div class="rating-item">
+                        <div class="rating-item-label">Enrichment</div>
+                        <div class="rating-item-value">${rating.enrichment_curriculum}</div>
+                    </div>
+                    <div class="rating-item">
+                        <div class="rating-item-label">Management</div>
+                        <div class="rating-item-value">${rating.school_management}</div>
+                    </div>
+                    <div class="rating-item">
+                        <div class="rating-item-label">Environment</div>
+                        <div class="rating-item-value">${rating.school_environment}</div>
+                    </div>
+                    <div class="rating-item average">
+                        <div class="rating-item-label">Overall Average</div>
+                        <div class="rating-item-value">${avg}</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <i class="uil uil-calendar-alt"></i>
+                    <span>Rated on ${date}</span>
+                </div>
+            `;
+
+            document.getElementById('ratingModal').classList.add('active');
+        }
+
+        async function deleteRating(userId, schoolId) {
+            if (!confirm('Are you sure you want to delete this rating?')) return;
+
+            try {
+                const res = await fetch(`${API_URL}/schools/${schoolId}/rate`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${TOKEN}`, 'Content-Type': 'application/json', 'Accept': 'application/json' }
+                });
+
+                if (res.ok) {
+                    showMessage('Rating deleted successfully', 'success');
+                    const currentSchool = document.getElementById('schoolSelect').value;
+                    if (currentSchool) fetchRatings(currentSchool);
+                } else {
+                    const result = await res.json();
+                    showMessage(result.message || 'Delete failed', 'error');
+                }
+            } catch (err) {
+                console.error('Error:', err);
+                showMessage('Delete failed', 'error');
+            }
+        }
+
+        document.querySelector('.modal-close').addEventListener('click', () => {
+            document.getElementById('ratingModal').classList.remove('active');
+        });
+
+        document.getElementById('ratingModal').addEventListener('click', (e) => {
+            if (e.target.id === 'ratingModal') {
+                document.getElementById('ratingModal').classList.remove('active');
+            }
+        });
+
+        document.getElementById('schoolSelect').addEventListener('change', (e) => {
+            const schoolId = e.target.value;
+            if (schoolId) {
+                fetchRatings(schoolId);
+            } else {
+                document.getElementById('tableBody').innerHTML = '<tr><td colspan="14" style="text-align: center;">Select a school to view ratings</td></tr>';
+                document.getElementById('statisticsSection').style.display = 'none';
+            }
+        });
+
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const filteredRatings = allRatings.filter(r => 
+                (r.user?.name || '').toLowerCase().includes(searchTerm) ||
+                (r.user?.email || '').toLowerCase().includes(searchTerm)
+            );
+            displayRatings(filteredRatings);
+        });
+
+        document.getElementById('logoutBtn').addEventListener('click', async (e) => {
+            e.preventDefault();
+            try {
+                const res = await fetch(`${API_URL}/logout`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${TOKEN}`, 'Content-Type': 'application/json', 'Accept': 'application/json' }
+                });
+
+                if (res.ok) {
+                    localStorage.removeItem('authToken');
+                    showMessage('Logged out successfully', 'success');
+                    setTimeout(() => window.location.href = '/login', 1000);
+                } else {
+                    showMessage('Logout failed', 'error');
+                }
+            } catch (err) {
+                console.error('Logout error:', err);
+                showMessage('Logout failed', 'error');
+            }
+        });
+
+        if (TOKEN) {
+            fetchSchools();
+        } else {
+            showMessage('Please login first', 'error');
+            document.getElementById('tableBody').innerHTML = '<tr><td colspan="14" style="text-align: center;">Please login first</td></tr>';
+        }
+    </script>
+</body>
+</html>

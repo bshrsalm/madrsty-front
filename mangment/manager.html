@@ -1,0 +1,1274 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>madrasty</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            right: 0;
+            top: 0;
+            width: 320px;
+            height: 100vh;
+            background: #ffffff;
+            box-shadow: -8px 0 40px rgba(0, 0, 0, 0.15);
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar.closed {
+            transform: translateX(320px);
+        }
+
+        .sidebar-header {
+            padding: 40px 30px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .sidebar-header h2 {
+            font-size: 26px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 700;
+        }
+
+        .sidebar-header p {
+            font-size: 14px;
+            opacity: 0.95;
+            font-weight: 400;
+        }
+
+        .user-profile {
+            padding: 30px 25px;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            background: #fafbfc;
+        }
+
+        .user-avatar {
+            width: 65px;
+            height: 65px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 26px;
+            flex-shrink: 0;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+            border-radius: 50%;
+        }
+
+        .user-details {
+            flex: 1;
+        }
+
+        .user-name {
+            font-weight: 700;
+            color: #1f2937;
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        .user-role {
+            color: #6b7280;
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .user-role i {
+            color: #667eea;
+            font-size: 12px;
+        }
+
+        .sidebar-menu {
+            padding: 25px 0;
+            flex: 1;
+        }
+
+        .menu-item {
+            padding: 18px 30px;
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            color: #4b5563;
+            text-decoration: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-right: 4px solid transparent;
+            cursor: pointer;
+            position: relative;
+            font-weight: 500;
+        }
+
+        .menu-item::before {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0;
+            height: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 4px 0 0 4px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .menu-item:hover {
+            background: linear-gradient(to left, #f9fafb 0%, #ffffff 100%);
+            color: #667eea;
+            padding-right: 35px;
+        }
+
+        .menu-item:hover::before {
+            width: 5px;
+            height: 60%;
+        }
+
+        .menu-item.active {
+            background: linear-gradient(to left, #ede9fe 0%, #f5f3ff 100%);
+            color: #667eea;
+            border-right-color: #667eea;
+            font-weight: 700;
+            padding-right: 26px;
+        }
+
+        .menu-item.active::before {
+            width: 5px;
+            height: 80%;
+        }
+
+        .menu-item i {
+            width: 26px;
+            font-size: 20px;
+            text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .menu-item:hover i {
+            transform: scale(1.15);
+        }
+
+        .menu-item span {
+            font-size: 16px;
+        }
+
+        .logout-section {
+            padding: 25px;
+            border-top: 1px solid #e5e7eb;
+            background: #fafbfc;
+        }
+
+        .logout-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 16px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+        }
+
+        .logout-btn:hover {
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(239, 68, 68, 0.4);
+        }
+
+        .logout-btn i {
+            font-size: 18px;
+        }
+
+        .sidebar-toggle {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: white;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            z-index: 1001;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+        }
+
+        .sidebar-toggle:hover {
+            transform: scale(1.08);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+        }
+
+        .sidebar-toggle:active {
+            transform: scale(0.95);
+        }
+
+        .toggle-icon {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .toggle-line {
+            width: 28px;
+            height: 3px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 3px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* التعديلات على زر القائمة */
+        .sidebar-toggle.active .toggle-line:nth-child(1) {
+            transform: rotate(45deg) translate(8px, 8px);
+        }
+
+        .sidebar-toggle.active .toggle-line:nth-child(2) {
+            opacity: 0;
+            transform: translateX(20px);
+        }
+
+        .sidebar-toggle.active .toggle-line:nth-child(3) {
+            transform: rotate(-45deg) translate(8px, -8px);
+        }
+
+        /* إضافة أيقونة X */
+        .toggle-x {
+            position: absolute;
+            font-size: 28px;
+            color: #667eea;
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .sidebar-toggle.active .toggle-x {
+            opacity: 1;
+        }
+
+        .sidebar-toggle.active .toggle-icon {
+            opacity: 0;
+        }
+
+        .main-content {
+            margin-right: 320px;
+            padding: 40px;
+            transition: margin-right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            min-height: 100vh;
+        }
+
+        .main-content.expanded {
+            margin-right: 0;
+        }
+
+        .welcome-card {
+            background: white;
+            border-radius: 25px;
+            padding: 50px 45px;
+            margin-bottom: 40px;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.12);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .welcome-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(102, 126, 234, 0.08) 0%, transparent 70%);
+            border-radius: 50%;
+            transform: translate(30%, -30%);
+        }
+
+        .welcome-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .welcome-title {
+            color: #1f2937;
+            font-size: 38px;
+            font-weight: 800;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .welcome-subtitle {
+            color: #6b7280;
+            font-size: 18px;
+            font-weight: 500;
+            line-height: 1.6;
+        }
+
+        .welcome-icon {
+            position: absolute;
+            left: 50px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 120px;
+            opacity: 0.05;
+            color: #667eea;
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .action-card {
+            background: white;
+            border-radius: 20px;
+            padding: 35px 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            text-decoration: none;
+            display: block;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid transparent;
+        }
+
+        .action-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            transform: translate(40%, -40%);
+            transition: all 0.4s;
+        }
+
+        .action-card:nth-child(1)::before {
+            background: radial-gradient(circle, rgba(102, 126, 234, 0.1) 0%, transparent 70%);
+        }
+
+        .action-card:nth-child(2)::before {
+            background: radial-gradient(circle, rgba(240, 147, 251, 0.1) 0%, transparent 70%);
+        }
+
+        .action-card:nth-child(3)::before {
+            background: radial-gradient(circle, rgba(79, 172, 254, 0.1) 0%, transparent 70%);
+        }
+
+        .action-card:nth-child(4)::before {
+            background: radial-gradient(circle, rgba(67, 233, 123, 0.1) 0%, transparent 70%);
+        }
+
+        .action-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+        }
+
+        .action-card:hover::before {
+            transform: translate(35%, -35%) scale(1.2);
+        }
+
+        .action-card:nth-child(1):hover {
+            border-color: rgba(102, 126, 234, 0.3);
+        }
+
+        .action-card:nth-child(2):hover {
+            border-color: rgba(240, 147, 251, 0.3);
+        }
+
+        .action-card:nth-child(3):hover {
+            border-color: rgba(79, 172, 254, 0.3);
+        }
+
+        .action-card:nth-child(4):hover {
+            border-color: rgba(67, 233, 123, 0.3);
+        }
+
+        .action-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 25px;
+            font-size: 32px;
+            color: white;
+            position: relative;
+            z-index: 1;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            transition: transform 0.4s;
+        }
+
+        .action-card:hover .action-icon {
+            transform: scale(1.1) rotate(-5deg);
+        }
+
+        .action-card:nth-child(1) .action-icon {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .action-card:nth-child(2) .action-icon {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .action-card:nth-child(3) .action-icon {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .action-card:nth-child(4) .action-icon {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        }
+
+        .action-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .action-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 12px;
+        }
+
+        .action-description {
+            color: #6b7280;
+            font-size: 15px;
+            line-height: 1.7;
+            font-weight: 400;
+        }
+
+        .posts-section {
+            background: white;
+            border-radius: 25px;
+            padding: 45px 40px;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.12);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 35px;
+            padding-bottom: 25px;
+            border-bottom: 2px solid #f3f4f6;
+        }
+
+        .section-title {
+            font-size: 28px;
+            font-weight: 800;
+            color: #1f2937;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .section-title i {
+            color: #667eea;
+            font-size: 26px;
+        }
+
+        .view-all-btn {
+            padding: 12px 28px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 15px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .view-all-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .post-card {
+            background: linear-gradient(to bottom, #fafbfc 0%, #ffffff 100%);
+            border-radius: 18px;
+            padding: 30px;
+            margin-bottom: 25px;
+            border: 2px solid #e5e7eb;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .post-card::before {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: 5px;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transform: scaleY(0);
+            transition: transform 0.4s;
+        }
+
+        .post-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 10px 40px rgba(102, 126, 234, 0.2);
+            transform: translateX(-8px);
+        }
+
+        .post-card:hover::before {
+            transform: scaleY(1);
+        }
+
+        .post-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .post-author {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .author-avatar {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 20px;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .author-info h4 {
+            color: #1f2937;
+            font-size: 17px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .post-time {
+            color: #9ca3af;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 500;
+        }
+
+        .post-time i {
+            font-size: 13px;
+        }
+
+        .post-title {
+            color: #1f2937;
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .post-content {
+            color: #374151;
+            line-height: 1.9;
+            margin-bottom: 20px;
+            font-size: 16px;
+            font-weight: 400;
+        }
+
+        .post-preview {
+            text-align: center;
+        }
+
+        .post-preview-text {
+            color: #667eea;
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        .post-preview-text i {
+            margin-left: 8px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px;
+            color: #6b7280;
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .loading i {
+            font-size: 40px;
+            margin-bottom: 15px;
+            color: #667eea;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 999;
+            display: none;
+            transition: opacity 0.4s;
+        }
+
+        .overlay.active {
+            display: block;
+        }
+
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 100%;
+                max-width: 340px;
+            }
+
+            .sidebar.closed {
+                transform: translateX(100%);
+            }
+
+            .main-content {
+                margin-right: 0;
+            }
+
+            .quick-actions {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .main-content {
+                padding: 25px 20px;
+            }
+
+            .welcome-card {
+                padding: 35px 25px;
+            }
+
+            .welcome-title {
+                font-size: 28px;
+            }
+
+            .sidebar-toggle {
+                width: 50px;
+                height: 50px;
+                top: 20px;
+                right: 20px;
+            }
+
+            .toggle-line {
+                width: 24px;
+            }
+        }
+
+        .footer {
+            position: relative;
+            width: 100%;
+            padding: 20px;
+            background: linear-gradient(to top, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.85));
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+            text-align: center;
+            box-shadow: 0 -5px 25px rgba(0, 0, 0, 0.03);
+            margin-top: 60px;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .copyright {
+            color: #4b5563;
+            font-size: 15px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        .university-name {
+            color: #1f2937;
+            font-weight: 700;
+            font-size: 18px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            padding: 0 4px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .university-name::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 4px;
+            right: 4px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #667eea, #764ba2, transparent);
+            border-radius: 1px;
+            opacity: 0.7;
+        }
+
+        .footer-decoration {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 5px;
+        }
+
+        .footer-dot {
+            width: 4px;
+            height: 4px;
+            background: #9ca3af;
+            border-radius: 50%;
+            opacity: 0.6;
+        }
+
+        @media (max-width: 576px) {
+            .footer {
+                padding: 12px;
+            }
+
+            .copyright {
+                font-size: 13px;
+            }
+
+            .university-name {
+                font-size: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Overlay -->
+    <div class="overlay" id="overlay"></div>
+
+    <!-- Sidebar Toggle -->
+    <button class="sidebar-toggle" id="toggleBtn" onclick="toggleSidebar()">
+        <div class="toggle-icon">
+            <div class="toggle-line"></div>
+            <div class="toggle-line"></div>
+            <div class="toggle-line"></div>
+        </div>
+        <div class="toggle-x">
+            <i class="fas fa-times"></i>
+        </div>
+    </button>
+
+   
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h2><i class="fas fa-graduation-cap"></i></h2>
+        </div>
+
+        <div class="user-profile">
+            <div class="user-avatar" id="userAvatar">M</div>
+            <div class="user-details">
+                <div class="user-name" id="userName">جاري التحميل...</div>
+                <div class="user-role">
+                    <i class="fas fa-crown"></i>
+                    مدير
+                </div>
+            </div>
+        </div>
+
+        <nav class="sidebar-menu">
+            <a href="manager.html" class="menu-item active">
+                <i class="fas fa-home"></i>
+                <span>الرئيسية</span>
+            </a>
+            <a href="profile.html" class="menu-item">
+                <i class="fas fa-user-circle"></i>
+                <span>الملف الشخصي</span>
+            </a>
+            
+            <a href="school-info.html" class="menu-item">
+                <i class="fas fa-school"></i>
+                <span>معلومات المدرسة</span>
+            </a>
+            <a href="school-ratings.html" class="menu-item">
+                <i class="fas fa-star"></i>
+                <span>التقييمات</span>
+            </a>
+            <a href="ratings.html" class="menu-item ">
+                <i class="fas fa-chart-line"></i>
+                <span>مقارنة المدارس</span>
+            </a>
+            <a href="create_post.html" class="menu-item">
+                <i class="fas fa-pen-to-square"></i>
+                <span>نشر منشور</span>
+            </a>
+           
+            <a href="manage-posts.html" class="menu-item">
+                <i class="fas fa-list-check"></i>
+                <span>إدارة المنشورات</span>
+            </a>
+            <a href="view-posts.html" class="menu-item">
+                <i class="fas fa-newspaper"></i>
+                <span>مشاهدة المنشورات</span>
+            </a>
+        </nav>
+
+        <div class="logout-section">
+            <button class="logout-btn" onclick="logout()">
+                <i class="fas fa-right-from-bracket"></i>
+                <span>تسجيل خروج</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content" id="mainContent">
+        <!-- Welcome Card -->
+        <div class="welcome-card">
+            <i class="fas fa-graduation-cap welcome-icon"></i>
+            <div class="welcome-content">
+                <h1 class="welcome-title">مرحباً بك في لوحة التحكم</h1>
+                <p class="welcome-subtitle">إدارة شاملة ومتكاملة لجميع أنشطة المدرسة بكفاءة واحترافية عالية</p>
+            </div>
+        </div>
+
+        
+        <div class="quick-actions">
+            <a href="profile.html" class="action-card">
+                <div class="action-icon">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+                <div class="action-content">
+                    <div class="action-title">الملف الشخصي</div>
+                    <div class="action-description">عرض وتعديل معلومات حسابك الشخصي وإعداداتك</div>
+                </div>
+            </a>
+
+            <a href="school-info.html" class="action-card">
+                <div class="action-icon">
+                    <i class="fas fa-school"></i>
+                </div>
+                <div class="action-content">
+                    <div class="action-title">معلومات المدرسة</div>
+                    <div class="action-description">عرض معلومات مدرستك </div>
+                </div>
+            </a>
+
+            <a href="create_post.html" class="action-card">
+                <div class="action-icon">
+                    <i class="fas fa-pen-to-square"></i>
+                </div>
+                <div class="action-content">
+                    <div class="action-title">نشر منشور</div>
+                    <div class="action-description">إنشاء منشور جديد ومشاركته مع المدرسة</div>
+                </div>
+            </a>
+
+            <a href="view-posts.html" class="action-card">
+                <div class="action-icon">
+                    <i class="fas fa-newspaper"></i>
+                </div>
+                <div class="action-content">
+                    <div class="action-title">مشاهدة المنشورات</div>
+                    <div class="action-description">استعراض جميع منشورات مدرستك والتفاعل معها</div>
+                </div>
+            </a>
+        </div>
+
+    
+        <div class="posts-section">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <i class="fas fa-thumbtack"></i>
+                    آخر المنشورات
+                </h2>
+                <a href="view-posts.html" class="view-all-btn">
+                    <span>عرض الكل</span>
+                    <i class="fas fa-arrow-left"></i>
+                </a>
+            </div>
+            <div id="postsContainer">
+                <div class="loading">
+                    <i class="fas fa-circle-notch"></i>
+                    <p>جاري تحميل المنشورات...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-decoration">
+                <div class="footer-dot"></div>
+                <div class="footer-dot"></div>
+                <div class="footer-dot"></div>
+            </div>
+            <p class="copyright">
+                <span>@2026</span>
+                <span class="university-name">ypu</span>
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        const API_URL = 'http://127.0.0.1:8000/api';
+        const BASE_URL = 'http://127.0.0.1:8000';
+
+        // Toggle Sidebar
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+            const mainContent = document.getElementById('mainContent');
+            const toggleBtn = document.getElementById('toggleBtn');
+            
+            const isClosed = sidebar.classList.contains('closed');
+            
+            if (isClosed) {
+                // فتح الشريط الجانبي
+                sidebar.classList.remove('closed');
+                overlay.classList.add('active');
+                mainContent.classList.remove('expanded');
+                toggleBtn.classList.add('active');
+            } else {
+                // إغلاق الشريط الجانبي
+                sidebar.classList.add('closed');
+                overlay.classList.remove('active');
+                mainContent.classList.add('expanded');
+                toggleBtn.classList.remove('active');
+            }
+        }
+
+        document.getElementById('overlay').addEventListener('click', toggleSidebar);
+
+        // Check authentication
+        function checkAuth() {
+            const token = localStorage.getItem('authToken');
+            const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
+
+            if (!token || !user || (user.role !== 'manager' && user.role !== 'Manager')) {
+                window.location.href = 'index.html';
+                return null;
+            }
+
+            return { token, user };
+        }
+
+        // Load user info with profile image
+        async function loadUserInfo() {
+            const auth = checkAuth();
+            if (!auth) return;
+
+            const { token, user } = auth;
+            const userNameElement = document.getElementById('userName');
+            const userAvatarElement = document.getElementById('userAvatar');
+            
+            userNameElement.textContent = user.name || 'مدير';
+            
+            // Set initial avatar with letter
+            userAvatarElement.textContent = (user.name || 'M')[0].toUpperCase();
+            userAvatarElement.style.display = 'flex';
+            
+            // Try to load user profile image from API
+            try {
+                const response = await fetch(`${API_URL}/me`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const profileData = await response.json();
+                    
+                    // Check if profile has image
+                    if (profileData.image) {
+                        const imageUrl = `${BASE_URL}/storage/${profileData.image}`;
+                        
+                        // Create image element
+                        const img = document.createElement('img');
+                        img.src = imageUrl;
+                        img.alt = 'صورة المستخدم';
+                        img.style.width = '100%';
+                        img.style.height = '100%';
+                        img.style.objectFit = 'cover';
+                        img.style.borderRadius = '50%';
+                        
+                        img.onerror = function() {
+                            // If image fails to load, show the letter avatar
+                            this.style.display = 'none';
+                            userAvatarElement.textContent = (user.name || 'M')[0].toUpperCase();
+                            userAvatarElement.style.display = 'flex';
+                        };
+                        
+                        // Clear avatar content and add image
+                        userAvatarElement.innerHTML = '';
+                        userAvatarElement.appendChild(img);
+                        userAvatarElement.style.display = 'block';
+                    }
+                }
+            } catch (error) {
+                console.log('لم يتم العثور على صورة للمستخدم، سيتم استخدام الحرف البديل');
+                // Keep the letter avatar if API call fails
+                userAvatarElement.innerHTML = '';
+                userAvatarElement.textContent = (user.name || 'M')[0].toUpperCase();
+                userAvatarElement.style.display = 'flex';
+            }
+        }
+
+        // Update welcome card with user name
+        function updateWelcomeCard() {
+            const auth = checkAuth();
+            if (!auth) return;
+
+            const { user } = auth;
+            const welcomeTitle = document.querySelector('.welcome-title');
+            
+            if (welcomeTitle) {
+                welcomeTitle.innerHTML = `مرحباً <span style="color: #667eea;">${user.name}</span> في لوحة التحكم`;
+            }
+        }
+
+        // Load recent posts
+        async function loadRecentPosts() {
+            const auth = checkAuth();
+            if (!auth) return;
+
+            const { token, user } = auth;
+            const postsContainer = document.getElementById('postsContainer');
+
+            try {
+                const response = await fetch(`${API_URL}/schools/${user.school_id}/posts`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to load posts');
+                }
+
+                const posts = await response.json();
+
+                if (posts.length === 0) {
+                    postsContainer.innerHTML = `
+                        <div class="loading">
+                            <i class="fas fa-inbox"></i>
+                            <p>لا توجد منشورات حتى الآن</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const recentPosts = posts.slice(0, 5);
+                postsContainer.innerHTML = recentPosts.map(post => `
+                    <div class="post-card" onclick="viewPost(${post.id})">
+                        <div class="post-header">
+                            <div class="post-author">
+                                <div class="author-avatar">${(post.user?.name || 'U')[0]}</div>
+                                <div class="author-info">
+                                    <h4>${post.user?.name || 'مستخدم'}</h4>
+                                    <span class="post-time">
+                                        <i class="far fa-clock"></i>
+                                        ${formatDate(post.created_at)}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <h3 class="post-title">${post.title}</h3>
+                        <p class="post-content">${post.content.substring(0, 150)}${post.content.length > 150 ? '...' : ''}</p>
+                        <div class="post-preview">
+                            <span class="post-preview-text">
+                                اقرأ المزيد
+                                <i class="fas fa-arrow-left"></i>
+                            </span>
+                        </div>
+                    </div>
+                `).join('');
+
+            } catch (error) {
+                console.error('Error loading posts:', error);
+                postsContainer.innerHTML = `
+                    <div class="loading">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p>حدث خطأ في تحميل المنشورات</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Format date
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diff = now - date;
+            const seconds = Math.floor(diff / 1000);
+            const minutes = Math.floor(seconds / 60);
+            const hours = Math.floor(minutes / 60);
+            const days = Math.floor(hours / 24);
+
+            if (days > 0) return `منذ ${days} يوم`;
+            if (hours > 0) return `منذ ${hours} ساعة`;
+            if (minutes > 0) return `منذ ${minutes} دقيقة`;
+            return 'الآن';
+        }
+
+        // View post
+        function viewPost(postId) {
+            window.location.href = `post-details.html?id=${postId}`;
+        }
+
+        // Function to update sidebar avatar from URL (can be called from other pages)
+        function updateSidebarAvatarFromUrl(imageUrl) {
+            const userAvatarElement = document.getElementById('userAvatar');
+            const auth = checkAuth();
+            
+            if (!userAvatarElement || !imageUrl || !auth) return;
+            
+            const { user } = auth;
+            
+            userAvatarElement.innerHTML = '';
+            const img = document.createElement('img');
+            img.src = imageUrl;
+            img.alt = 'صورة المستخدم';
+            img.style.width = '100%';
+            img.style.height = '100%';
+            img.style.objectFit = 'cover';
+            img.style.borderRadius = '50%';
+            
+            img.onerror = function() {
+                // If image fails to load, show the letter avatar
+                this.style.display = 'none';
+                userAvatarElement.textContent = (user.name || 'M')[0].toUpperCase();
+                userAvatarElement.style.display = 'flex';
+            };
+            
+            userAvatarElement.appendChild(img);
+            userAvatarElement.style.display = 'block';
+        }
+
+        // Function to update sidebar avatar with image file
+        function updateSidebarAvatarWithFile(imageFile) {
+            const userAvatarElement = document.getElementById('userAvatar');
+            
+            if (!userAvatarElement || !imageFile) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                userAvatarElement.innerHTML = '';
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                img.alt = 'صورة المستخدم';
+                img.style.width = '100%';
+                img.style.height = '100%';
+                img.style.objectFit = 'cover';
+                img.style.borderRadius = '50%';
+                userAvatarElement.appendChild(img);
+                userAvatarElement.style.display = 'block';
+            };
+            reader.readAsDataURL(imageFile);
+        }
+
+        // Logout
+        function logout() {
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('currentUser');
+            window.location.href = 'index.html';
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadUserInfo();
+            updateWelcomeCard();
+            loadRecentPosts();
+        });
+
+        // Listen for storage events to update avatar when profile is updated from other tabs
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'userAvatarUpdated' && e.newValue) {
+                updateSidebarAvatarFromUrl(e.newValue);
+            }
+        });
+    </script>
+</body>
+</html>
